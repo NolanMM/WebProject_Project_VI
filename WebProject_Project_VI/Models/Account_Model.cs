@@ -10,6 +10,5 @@ namespace WebProject_Project_VI.Models
         public string? Password { get; set; } = String.Empty;           // Password of the account
         [Required]
         public string? AuthorName { get; set; } = String.Empty;         // Name of the author
-        public List<Post_Model>? post_Models { get; set; }              // List of posts corresponding to the author
     }
 }
