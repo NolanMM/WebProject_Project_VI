@@ -7,5 +7,6 @@
         Type Get_Type();
 
         string[] Get_Property();
+
     }
 }

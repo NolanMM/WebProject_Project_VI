@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using Microsoft.Extensions.Hosting;
+using MySqlConnector;
 using WebProject_Project_VI.Models;
 
 namespace WebProject_Project_VI.Services.Table_Services
@@ -193,7 +194,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(string? Title, string? Content, string? Author, bool? Is_Public)
+        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(string Title, string Content, string Author, bool? Is_Public)
         {
             if(connection_string == null)
             {
@@ -267,13 +268,16 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<List<IData>?> Read_Post_Data_By_Title_Async(string? title)
+        public async Task<Post_Model?> Read_Post_Data_By_Title_Async(string? title)
         {
             if (connection_string == null)
             {
                 return null;
             }
-
+            if(title == null)
+            {
+                return null;
+            }
             try
             {
                 using MySqlConnection connection = new MySqlConnection(connection_string);
@@ -304,7 +308,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                             _data.Add(post);
                         }
                         await connection.CloseAsync();
-                        return _data.ConvertAll(post=> (IData)post);
+                        return _data.FirstOrDefault();
                     }
                 }
             }
@@ -320,7 +324,10 @@ namespace WebProject_Project_VI.Services.Table_Services
             {
                 return null;
             }
-
+            if(author == null)
+            {
+                return null;
+            }
             try
             {
                 using MySqlConnection connection = new MySqlConnection(connection_string);
@@ -362,38 +369,133 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> Update_Post_Data_By_Title_Async(string? title, string? propertyUpdated, string? newValue)
+        public async Task<bool> Update_Post_Data_String_By_Title_Async(string? title, string? propertyUpdated, string? newValue, Type property_Type)
         {
             if (connection_string == null)
             {
                 return false;
             }
-
-            try
+            if(title == null || propertyUpdated == null || newValue == null)
             {
-                using MySqlConnection connection = new MySqlConnection(connection_string);
-                await connection.OpenAsync();
-
-                string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
-
-                using (MySqlCommand cmd = new MySqlCommand(sql, connection))
-                {
-                    cmd.Parameters.AddWithValue("@title", title);
-                    cmd.Parameters.AddWithValue("@NewValue", newValue);
-
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                    await connection.CloseAsync();
-
-                    return rowsAffected > 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
                 return false;
             }
-        }
+            // Cast the newValue to the property_Type
+            if(property_Type == typeof(string))
+            {
+                try
+                {
+                    using MySqlConnection connection = new MySqlConnection(connection_string);
+                    await connection.OpenAsync();
 
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+
+                    using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@title", title);
+                        cmd.Parameters.AddWithValue("@NewValue", newValue);
+
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        await connection.CloseAsync();
+
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else if(property_Type == typeof(int))
+            {
+                try
+                {
+                    using MySqlConnection connection = new MySqlConnection(connection_string);
+                    await connection.OpenAsync();
+
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+
+                    using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@title", title);
+                        int _newValue = Convert.ToInt32(newValue);
+                        cmd.Parameters.AddWithValue("@NewValue", _newValue);
+
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        await connection.CloseAsync();
+
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else if(property_Type == typeof(bool))
+            {
+                try
+                {
+                    using MySqlConnection connection = new MySqlConnection(connection_string);
+                    await connection.OpenAsync();
+
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+
+                    using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@title", title);
+                        bool _newValue = Convert.ToBoolean(newValue);
+                        cmd.Parameters.AddWithValue("@NewValue", _newValue);
+
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        await connection.CloseAsync();
+
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else if(property_Type == typeof(DateTime))
+            {
+                try
+                {
+                    using MySqlConnection connection = new MySqlConnection(connection_string);
+                    await connection.OpenAsync();
+
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+
+                    using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@title", title);
+                        DateTime _newValue = Convert.ToDateTime(newValue);
+                        cmd.Parameters.AddWithValue("@NewValue", _newValue);
+
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        await connection.CloseAsync();
+
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
     }
 }
