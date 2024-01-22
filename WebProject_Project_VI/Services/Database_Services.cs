@@ -25,7 +25,7 @@ namespace WebProject_Project_VI.Services
                 return null;
             }
             _instance = new Database_Services();
-            if (logger == null || configuration == null || SessionID == null)
+            if (configuration == null || SessionID == null)
             {
                 _logger.LogError("Failed to create Database Services constructor!");
                 return null;
@@ -38,7 +38,10 @@ namespace WebProject_Project_VI.Services
             _logger.LogInformation($"Created Database Services constructor for SessionID: {SessionID} successfully!");
             return _instance;
         }
-
+        public string ? Get_Session_Id()
+        {
+            return SesionID;
+        }
         public async Task<List<IData>?> Read_All_Data_By_Table_Name_Async(string? table_name,string? username_account_authorized, string? password_account_authorized)
         {
             if(table_name == Account_Table_Name)
