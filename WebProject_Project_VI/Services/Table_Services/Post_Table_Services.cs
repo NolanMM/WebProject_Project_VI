@@ -461,8 +461,8 @@ namespace WebProject_Project_VI.Services.Table_Services
                 {
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
-                    DateTime _newValue = Convert.ToDateTime(newValue);
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = " + _newValue + " WHERE `Title` = \"" + title + "\";";
+                    //DateTime _newValue = Convert.ToDateTime(newValue);
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = \"" + newValue + "\" WHERE `Title` = \"" + title + "\";";
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
