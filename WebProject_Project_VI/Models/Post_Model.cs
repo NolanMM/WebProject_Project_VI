@@ -37,16 +37,12 @@ namespace WebProject_Project_VI.Models
         {
             return typeof(Post_Model);
         }
-        public void toString()
+        public string toString()
         {
-            Console.WriteLine($"Title: {Title}");
-            Console.WriteLine($"Content: {Content}");
-            Console.WriteLine($"Author: {Author}");
-            Console.WriteLine($"Likes: {Number_Of_Likes}");
-            Console.WriteLine($"Dislikes: {Number_Of_DisLikes}");
-            Console.WriteLine($"Public: {Is_Public}");
-            Console.WriteLine($"Visits: {Number_Of_Visits}");
-            Console.WriteLine($"Date: {Date}");
+            return $"Title: {Title}\nContent: {Content}\nAuthor: {Author}\n" +
+                   $"Likes: {Number_Of_Likes}\nDislikes: {Number_Of_DisLikes}\n" +
+                   $"Public: {Is_Public}\nVisits: {Number_Of_Visits}\nDate: {Date}";
         }
+
     }
 }

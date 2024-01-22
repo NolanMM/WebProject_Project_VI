@@ -31,11 +31,9 @@ namespace WebProject_Project_VI.Models
         {
             return typeof(Account_Model);
         }
-        public void toString()
+        public string toString()
         {
-            Console.WriteLine($"Username: {Username}");
-            Console.WriteLine($"Password: {Password}");
-            Console.WriteLine($"Author Name: {AuthorName}");
+            return $"Username: {Username}\nPassword: {Password}\nAuthor Name: {AuthorName}";
         }
     }
 }

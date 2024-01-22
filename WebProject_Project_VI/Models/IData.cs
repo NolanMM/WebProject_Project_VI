@@ -2,7 +2,7 @@
 {
     public interface IData
     {
-        void toString();
+        string toString();
 
         Type Get_Type();
 

@@ -26,6 +26,14 @@ namespace WebProject_Project_VI.Services.Table_Services
         {
             return typeof(Post_Table_Services);
         }
+        public string? Get_Session_Id()
+        {
+            if (Session_Id == null)
+            {
+                return null;
+            }
+            return Session_Id;
+        }
         public ITableServices? SetUp(string? session_id, IConfiguration configuration)
         {
             if(session_id == null || configuration == null)
@@ -248,12 +256,10 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"DELETE FROM {schema}.{table_name} WHERE `Title` = @title;";
+                string sql = $"DELETE FROM {schema}.{table_name} WHERE `Title` = \""+ title + "\";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                 {
-                    cmd.Parameters.AddWithValue("@title", title);
-
                     int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                     await connection.CloseAsync();
@@ -283,12 +289,10 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `Title` = @title;";
+                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `Title` = \"" + title +"\";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                 {
-                    cmd.Parameters.AddWithValue("@title", title);
-
                     using (MySqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         List<Post_Model>  _data = new List<Post_Model>();
@@ -333,12 +337,10 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `Author` = @author;";
+                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `Author` = \"" + author +"\";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                 {
-                    cmd.Parameters.AddWithValue("@author", author);
-
                     using (MySqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         List<Post_Model> _data = new List<Post_Model>();
@@ -387,13 +389,10 @@ namespace WebProject_Project_VI.Services.Table_Services
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
 
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = \"" + newValue +"\" WHERE `Title` = \"" + title + "\";";
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
-                        cmd.Parameters.AddWithValue("@title", title);
-                        cmd.Parameters.AddWithValue("@NewValue", newValue);
-
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         await connection.CloseAsync();
@@ -413,15 +412,11 @@ namespace WebProject_Project_VI.Services.Table_Services
                 {
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
-
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+                    int _newValue = Convert.ToInt32(newValue);
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = " + _newValue + " WHERE `Title` = \"" + title + "\";";
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
-                        cmd.Parameters.AddWithValue("@title", title);
-                        int _newValue = Convert.ToInt32(newValue);
-                        cmd.Parameters.AddWithValue("@NewValue", _newValue);
-
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         await connection.CloseAsync();
@@ -441,15 +436,12 @@ namespace WebProject_Project_VI.Services.Table_Services
                 {
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
+                    bool _newValue = Convert.ToBoolean(newValue);
 
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = " + _newValue + " WHERE `Title` = \"" + title + "\";";
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
-                        cmd.Parameters.AddWithValue("@title", title);
-                        bool _newValue = Convert.ToBoolean(newValue);
-                        cmd.Parameters.AddWithValue("@NewValue", _newValue);
-
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         await connection.CloseAsync();
@@ -469,15 +461,11 @@ namespace WebProject_Project_VI.Services.Table_Services
                 {
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
-
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Title` = @title;";
+                    DateTime _newValue = Convert.ToDateTime(newValue);
+                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = " + _newValue + " WHERE `Title` = \"" + title + "\";";
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
-                        cmd.Parameters.AddWithValue("@title", title);
-                        DateTime _newValue = Convert.ToDateTime(newValue);
-                        cmd.Parameters.AddWithValue("@NewValue", _newValue);
-
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         await connection.CloseAsync();

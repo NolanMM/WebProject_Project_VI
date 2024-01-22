@@ -21,7 +21,14 @@ namespace WebProject_Project_VI.Services.Table_Services
 
         private Account_Table_Services? _instance;
         private IConfiguration? _configuration;
-
+        public string? Get_Session_Id()
+        {
+            if(Session_Id == null)
+            {
+                return null;
+            }
+            return Session_Id;
+        }
         public Type Get_Type()
         {
             return typeof(Account_Table_Services);
@@ -221,12 +228,10 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"DELETE FROM {schema}.{table_name} WHERE `Username` = @Username;";
+                string sql = $"DELETE FROM {schema}.{table_name} WHERE `Username` = \"" + username + "\";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                 {
-                    cmd.Parameters.AddWithValue("@Username", username);
-
                     int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                     await connection.CloseAsync();
@@ -253,12 +258,10 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `Username` = @Username;";
+                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `Username` = \"" + username + "\";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection)) 
                 {
-                    cmd.Parameters.AddWithValue("@Username", username);
-
                     using (MySqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
