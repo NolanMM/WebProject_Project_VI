@@ -3,11 +3,14 @@ using WebProject_Project_VI.Models;
 
 namespace WebProject_Project_VI.Services.Table_Services
 {
-    public class Account_Table_Services
+    public class Account_Table_Services : ITableServices
     {
         // Information about the table inside the database server
         private readonly string table_name = "account";
         private readonly string schema = "accountdata";
+        private readonly string connection_key = "AccountTableConnection";
+        private readonly string Username_Authorized = "historyfellow@Account";
+        private readonly string Password_Authorized = "HistoryFellow@Password";
 
         // Information about the connection string corresponding to the Session_Id to the database server
         private string? connection_string { get; set; } = null;
@@ -18,14 +21,22 @@ namespace WebProject_Project_VI.Services.Table_Services
 
         private Account_Table_Services? _instance;
         private IConfiguration? _configuration;
-        public Account_Table_Services? SetUp(string? session_id, IConfiguration configuration)
+        public ITableServices? SetUp(string? session_id, IConfiguration configuration)
+        {
+            if (session_id == null || configuration == null)
+            {
+                return null;
+            }
+            return Set_Up_Account_Table_Services(session_id, configuration);
+        }
+        public Account_Table_Services? Set_Up_Account_Table_Services(string? session_id, IConfiguration configuration)
         {
             if(session_id != null)
             {
                 _configuration = configuration;
                 data = new List<Account_Model>();
                 Session_Id = session_id;
-                connection_string = _configuration.GetConnectionString("AccountTableConnection");
+                connection_string = _configuration.GetConnectionString(connection_key);
                 return Instance;
             }else
             {
@@ -45,7 +56,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<List<Account_Model>?> ReadAllAsync()
+        public async Task<List<IData>?> Read_All_Data_Async(string? username_Authorized, string? password_Authorized)
         {
 
             if(connection_string == null)
@@ -57,66 +68,105 @@ namespace WebProject_Project_VI.Services.Table_Services
             {
                 data.Clear();
             }
-
-            try
+            if(username_Authorized == null || password_Authorized == null)
             {
-                using MySqlConnection Connection = new MySqlConnection(connection_string);
-                await Connection.OpenAsync();
-                string sql = $"SELECT * FROM {schema}.{table_name};";
-                using var cmd = new MySqlCommand(sql, Connection);
-                using var reader = await cmd.ExecuteReaderAsync();
-                data = new List<Account_Model>();
-                while (await reader.ReadAsync())
-                {
-                    var Account = new Account_Model
-                    {
-                        Username = reader.GetString(0),
-                        Password = reader.GetString(1),
-                        AuthorName = reader.GetString(2),
-                    };
-                    data.Add(Account);
-                }
-                await Connection.CloseAsync();
-                return data;
+                return null;
             }
-            catch (Exception ex)
+            if (username_Authorized == Username_Authorized && password_Authorized == Password_Authorized)
             {
-                Console.WriteLine(ex.ToString());
+                try
+                {
+                    using MySqlConnection Connection = new MySqlConnection(connection_string);
+                    await Connection.OpenAsync();
+                    string sql = $"SELECT * FROM {schema}.{table_name};";
+                    using var cmd = new MySqlCommand(sql, Connection);
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    data = new List<Account_Model>();
+                    while (await reader.ReadAsync())
+                    {
+                        var Account = new Account_Model
+                        {
+                            Username = reader.GetString(0),
+                            Password = reader.GetString(1),
+                            AuthorName = reader.GetString(2),
+                        };
+                        data.Add(Account);
+                    }
+                    await Connection.CloseAsync();
+                    return data.ConvertAll(post => (IData)post);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return null;
+                }
+            }
+            else
+            {
                 return null;
             }
         }
 
-        public async Task<bool> DeleteAllDataAsync()
+        public async Task<bool> Delete_All_Data_Async(string? username, string? password)
+        {
+            if (username == null || password == null)
+            {
+                return false;
+            }
+            if (connection_string == null)
+            {
+                return false;
+            }
+            MySqlConnectionStringBuilder Extracter = new MySqlConnectionStringBuilder(connection_string);
+            if (username == Extracter.UserID && password == Extracter.Password)
+            {
+                try
+                {
+                    using MySqlConnection connection = new MySqlConnection(connection_string);
+                    await connection.OpenAsync();
+
+                    string sql = $"DELETE FROM {schema}.{table_name};";
+
+                    using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                    {
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        await connection.CloseAsync();
+
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public async Task<bool> Create_Account_Data_By_Passing_Values_Async(string? username, string? password, string? author_name)
         {
             if (connection_string == null)
             {
                 return false;
             }
-
-            try
+            if(username == null || password == null || author_name == null)
             {
-                using MySqlConnection connection = new MySqlConnection(connection_string);
-                await connection.OpenAsync();
-
-                string sql = $"DELETE FROM {schema}.{table_name};";
-
-                using (MySqlCommand cmd = new MySqlCommand(sql, connection))
-                {
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                    await connection.CloseAsync();
-
-                    return rowsAffected > 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
                 return false;
             }
+            Account_Model account = new Account_Model
+            {
+                Username = username,
+                Password = password,
+                AuthorName = author_name,
+            };
+            return await Create_Account_Data_By_Account_Model_Async(account);
         }
 
-        public async Task<bool> CreateDataAsync(Account_Model account)
+        public async Task<bool> Create_Account_Data_By_Account_Model_Async(Account_Model account)
         {
             if (connection_string == null)
             {
@@ -166,7 +216,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> DeleteDataAsync(string? username)
+        public async Task<bool> Delete_Account_Data_By_Username_Async(string? username)
         {
             if (connection_string == null)
             {
@@ -198,7 +248,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<Account_Model?> ReadDataAsync(string? username)
+        public async Task<IData?> Read_Account_Data_By_Username_Async(string? username)
         {
             if (connection_string == null)
             {
@@ -247,7 +297,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> UpdateDataAsync(string? username, string? propertyUpdated, string? newValue)
+        public async Task<bool> Update_Account_Data_By_Username_Async(string? username, string? propertyUpdated, string? newValue)
         {
             if (connection_string == null)
             {

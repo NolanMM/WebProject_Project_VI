@@ -2,7 +2,7 @@
 
 namespace WebProject_Project_VI.Models
 {
-    public class Post_Model
+    public class Post_Model : IData
     {
         [Required]
         public string? Title { get; set; } = String.Empty;          // Title of the post
@@ -16,5 +16,32 @@ namespace WebProject_Project_VI.Models
         public int? Number_Of_Visits { get; set; } = 0;             // Number of visits of the post
         [Required]
         public DateTime? Date { get; set; }                         // Date of the post
+
+        public string[] Get_Property()
+        {
+            Type Post_Model_type = Get_Type();
+            string[] propertyNames = Post_Model_type.GetProperties()
+               .Where(p => p.Name != "Id")
+               .Select(p => p.Name)
+               .ToArray();
+            return propertyNames;
+        }
+
+        public Type Get_Type()
+        {
+            return typeof(Post_Model);
+        }
+
+        public void toString()
+        {
+            Console.WriteLine($"Title: {Title}");
+            Console.WriteLine($"Content: {Content}");
+            Console.WriteLine($"Author: {Author}");
+            Console.WriteLine($"Likes: {Number_Of_Likes}");
+            Console.WriteLine($"Dislikes: {Number_Of_DisLikes}");
+            Console.WriteLine($"Public: {Is_Public}");
+            Console.WriteLine($"Visits: {Number_Of_Visits}");
+            Console.WriteLine($"Date: {Date}");
+        }
     }
 }
