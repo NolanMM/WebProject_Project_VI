@@ -15,6 +15,7 @@ namespace WebProject_Project_VI.Controllers
         {
             _logger = logger;
             _configuration = configuration;
+            _logger.LogInformation("Created HomeController && IConfiguration constructor successfully!");
         }
 
         public IActionResult Index()

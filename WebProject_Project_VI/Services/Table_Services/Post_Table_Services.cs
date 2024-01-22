@@ -21,7 +21,10 @@ namespace WebProject_Project_VI.Services.Table_Services
 
         private Post_Table_Services? _instance;
         private IConfiguration? _configuration;
-
+        public Type Get_Type()
+        {
+            return typeof(Post_Table_Services);
+        }
         public ITableServices? SetUp(string? session_id, IConfiguration configuration)
         {
             if(session_id == null || configuration == null)
@@ -30,34 +33,22 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
             return Set_Up_Post_Table_Services(session_id, configuration);
         }
-        private Post_Table_Services? Set_Up_Post_Table_Services(string? session_id, IConfiguration configuration)
+        public Post_Table_Services? Set_Up_Post_Table_Services(string? session_id, IConfiguration configuration)
         {
             if (session_id != null)
             {
+                _instance = new Post_Table_Services();
                 _configuration = configuration;
                 data = new List<Post_Model>();
                 Session_Id = session_id;
                 connection_string = _configuration.GetConnectionString(connection_key);
-                return Instance;
+                return _instance;
             }
             else
             {
                 return null;
             }
         }
-
-        public Post_Table_Services Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new Post_Table_Services();
-                }
-                return _instance;
-            }
-        }
-        
         public async Task<List<IData>?> Read_All_Data_Async(string? username_Authorized, string? password_Authorized)
         {
 

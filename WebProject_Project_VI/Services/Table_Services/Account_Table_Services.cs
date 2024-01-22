@@ -21,6 +21,11 @@ namespace WebProject_Project_VI.Services.Table_Services
 
         private Account_Table_Services? _instance;
         private IConfiguration? _configuration;
+
+        public Type Get_Type()
+        {
+            return typeof(Account_Table_Services);
+        }
         public ITableServices? SetUp(string? session_id, IConfiguration configuration)
         {
             if (session_id == null || configuration == null)
@@ -33,29 +38,17 @@ namespace WebProject_Project_VI.Services.Table_Services
         {
             if(session_id != null)
             {
+                _instance = new Account_Table_Services();
                 _configuration = configuration;
                 data = new List<Account_Model>();
                 Session_Id = session_id;
                 connection_string = _configuration.GetConnectionString(connection_key);
-                return Instance;
+                return _instance;
             }else
             {
                 return null;
             }
         }
-
-        public Account_Table_Services Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new Account_Table_Services();
-                }
-                return _instance;
-            }
-        }
-
         public async Task<List<IData>?> Read_All_Data_Async(string? username_Authorized, string? password_Authorized)
         {
 
