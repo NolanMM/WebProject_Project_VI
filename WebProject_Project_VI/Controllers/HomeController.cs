@@ -1,16 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebProject_Project_VI.Models;
+using WebProject_Project_VI.Services;
+using WebProject_Project_VI.Services.Table_Services;
 
 namespace WebProject_Project_VI.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private ILogger<HomeController>? _logger { get; set; }
+        private readonly IConfiguration _configuration;
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
+            _logger.LogInformation("Created HomeController && IConfiguration constructor successfully!");
         }
 
         public IActionResult Index()
