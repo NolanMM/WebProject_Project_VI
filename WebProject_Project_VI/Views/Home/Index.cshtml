@@ -1,136 +1,48 @@
-﻿@{
+﻿@model List<Post>
+@{
     ViewData["Title"] = "Home Page";
 }
 
+<!-- Include Icons -->
 <script src="https://use.fontawesome.com/fe459689b4.js"></script>
 
 
+<!-- Page Title / Welcome Message -->
 <div class="text-center">
     <h1 class="display-4">Welcome To the Site</h1>
 </div>
 
-<div class="accordion-item">
-    <div class="accordion-header" onclick="toggleAccordion('collapseOne')">
-        <!-- ... (header of the first accordion) -->
-        <div class="header-content">
-            Author Name - Post Title - Date
-            <span class="thumbs-up" onclick="like('collapseOne')"><i class="fa fa-thumbs-up"></i> <span id="likesOne">0</span></span>
-            <span class="thumbs-down" onclick="dislike('collapseOne')"><i class="fa fa-thumbs-down"></i> <span id="dislikesOne">0</span></span>
-            <span class="views" onclick="incrementViews('collapseOne')"><i class="fa fa-eye"></i> <span id="viewsOne">0</span></span>
+
+<!-- Loop through the list of posts -->
+@foreach (var post in Model)
+{
+    <!-- Create an accordian item -->
+    <div class="accordion-item">
+        <div class="accordion-header collapsed" onclick="toggleAccordion('@post.AuthorName')">
+            <div class="header-content">
+                <div class="left-content">
+                    <!-- Put the Authors Name, Post Title and Date of Publication in accordian header -->
+                    @($"{post.AuthorName} - {post.PostTitle} - Date")
+                </div>
+                <div class="right-content">
+                    <!-- Put the Likes, Dislike and Views icons and number in accordian header -->
+                    <span class="thumbs-up" onclick="toggleLikeDislike('@post.AuthorName', 'like')"><i class="fa fa-thumbs-up"></i> <span id="likes@post.AuthorName">@post.LikeCount</span></span>
+                    <span class="thumbs-down" onclick="toggleLikeDislike('@post.AuthorName', 'dislike')"><i class="fa fa-thumbs-down"></i> <span id="dislikes@post.AuthorName">@post.DislikeCount</span></span>
+                    <span class="views" onclick="incrementViews('@post.AuthorName')"><i class="fa fa-eye"></i> <span id="views@post.AuthorName">@post.ViewCount</span></span>
+                </div>
+            </div>
+        </div>
+        <div id="@post.AuthorName" class="accordion-body">
+            <!-- Put the Content of the post in the accordian body -->
+            <strong>@post.Content</strong>
+            <div class="like-dislike-buttons">
+                <!-- Put the Like and Dislike Button in the accordian body -->
+                <button class="likesbtn" id="likeButton@post.AuthorName" onclick="toggleLikeDislike('@post.AuthorName', 'like')"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i></button>
+                <button class="likesbtn" id="dislikeButton@post.AuthorName" onclick="toggleLikeDislike('@post.AuthorName', 'dislike')"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true"></i></button>
+            </div>
         </div>
     </div>
-    <div id="collapseOne" class="accordion-body">
-        <!-- ... (content of the first accordion) -->
-        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables.
-        <button class="likesbtn green"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i></button>
-        <button class="likesbtn red"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true"></i></button>
-    </div>
-</div>
+}
 
 
-
-<div class="accordion-item">
-    <div class="accordion-header collapsed" onclick="toggleAccordion('collapseTwo')">
-        <!-- ... (header of the second accordion) -->
-        <div class="header-content">
-            Author Name - Post Title - Date
-            <span class="thumbs-up" onclick="like('collapseTwo')"><i class="fa fa-thumbs-up"></i> <span id="likesTwo">0</span></span>
-            <span class="thumbs-down" onclick="dislike('collapseTwo')"><i class="fa fa-thumbs-down"></i> <span id="dislikesTwo">0</span></span>
-            <span class="views" onclick="incrementViews('collapseTwo')"><i class="fa fa-eye"></i> <span id="viewsTwo">0</span></span>
-        </div>
-    </div>
-    <div id="collapseTwo" class="accordion-body">
-        <!-- ... (content of the second accordion) -->
-        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables.
-        <button class="likesbtn green"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i></button>
-        <button class="likesbtn red"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true"></i></button>
-    </div>
-</div>
-
-
-
-
-<div class="accordion-item">
-    <div class="accordion-header collapsed" onclick="toggleAccordion('collapseThree')">
-        <!-- ... (header of the third accordion) -->
-        <div class="header-content">
-            Author Name - Post Title - Date
-            <span class="thumbs-up" onclick="like('collapseThree')"><i class="fa fa-thumbs-up"></i> <span id="likesThree">0</span></span>
-            <span class="thumbs-down" onclick="dislike('collapseThree')"><i class="fa fa-thumbs-down"></i> <span id="dislikesThree">0</span></span>
-            <span class="views" onclick="incrementViews('collapseThree')"><i class="fa fa-eye"></i> <span id="viewsThree">0</span></span>
-        </div>
-    </div>
-    <div id="collapseThree" class="accordion-body">
-        <!-- ... (content of the third accordion) -->
-        <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables.
-        <button class="likesbtn green"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i></button>
-        <button class="likesbtn red"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true"></i></button>
-    </div>
-</div>
-
-
-
-
-<script>
-    var likes = { "collapseOne": 0, "collapseTwo": 0, "collapseThree": 0 };
-    var dislikes = { "collapseOne": 0, "collapseTwo": 0, "collapseThree": 0 };
-    var views = { "collapseOne": 0, "collapseTwo": 0, "collapseThree": 0 };
-
-    function like(id) {
-        likes[id]++;
-        updateLikes(id);
-    }
-
-    function dislike(id) {
-        dislikes[id]++;
-        updateDislikes(id);
-    }
-
-    function incrementViews(id) {
-        views[id]++;
-        updateViews(id);
-    }
-
-    function updateLikes(id) {
-        document.getElementById('likes' + id).innerText = likes[id];
-    }
-
-    function updateDislikes(id) {
-        document.getElementById('dislikes' + id).innerText = dislikes[id];
-    }
-
-    function updateViews(id) {
-        document.getElementById('views' + id).innerText = views[id];
-    }
-
-    var btns = document.querySelectorAll('.likesbtn');
-
-    btns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            // Remove the opposite class from all buttons
-            btns.forEach(function (otherBtn) {
-                if (btn !== otherBtn) {
-                    if (btn.classList.contains('green')) {
-                        otherBtn.classList.remove('red');
-                    } else if (btn.classList.contains('red')) {
-                        otherBtn.classList.remove('green');
-                    }
-                }
-            });
-
-            // Toggle the appropriate class on the clicked button
-            if (btn.classList.contains('green')) {
-                btn.classList.remove('green');
-            } else if (btn.classList.contains('red')) {
-                btn.classList.remove('red');
-            } else {
-                btn.classList.add('green');
-            }
-        });
-    });
-
-    function toggleAccordion(id) {
-        const accordionBody = document.getElementById(id);
-        accordionBody.style.display = (accordionBody.style.display === 'none' || accordionBody.style.display === '') ? 'block' : 'none';
-    }
-</script>
+<script src="~/js/site.js"></script>

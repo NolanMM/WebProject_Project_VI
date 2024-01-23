@@ -37,6 +37,20 @@ body {
     border-bottom: 1px solid #ddd;
 }
 
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left-content {
+    text-align: left;
+}
+
+.right-content {
+    text-align: right;
+}
+
 .accordion-body {
     padding: 10px;
 }
@@ -58,6 +72,10 @@ Likesbutton {
     cursor: pointer;
     outline: 0;
     color: #AAA;
+}
+
+.like-dislike-buttons {
+    margin-top: 10px; /* Adjust the margin as needed */
 }
 
 .likesbtn:focus {
