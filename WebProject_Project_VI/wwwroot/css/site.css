@@ -20,3 +20,54 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.accordion-item {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    background-color: #f1f1f1;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+
+.accordion-body {
+    padding: 10px;
+}
+
+.accordion-item:not(:last-child) {
+    border-bottom: none;
+}
+
+.collapsed {
+    border-bottom: 1px solid #ddd;
+}
+
+    .collapsed + .accordion-body {
+        display: none;
+    }
+
+
+Likesbutton {
+    cursor: pointer;
+    outline: 0;
+    color: #AAA;
+}
+
+.likesbtn:focus {
+    outline: none;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
