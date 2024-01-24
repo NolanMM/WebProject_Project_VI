@@ -9,11 +9,22 @@
 
 <!-- Page Title / Welcome Message -->
 <div class="text-center">
-    <h1 class="display-4">Welcome To the Site</h1>
+    <h1 class="display-4">Welcome To The Site</h1>
 
 
     <!-- Add the "New Post" button here -->
-    <a asp-action="NewPost" class="btn btn-primary">New Post</a>
+    <a asp-action="NewPost" class="dropbtn">New Post</a>
+
+    <!-- Dropdown for selecting filter option -->
+    <div class="dropdown">
+        <button class="dropbtn">Filter</button>
+        <div class="dropdown-content">
+            <a asp-action="Index" asp-route-filter="date">Sort by Date</a>
+            <a asp-action="Index" asp-route-filter="views">Sort by Views</a>
+            <a asp-action="Index" asp-route-filter="likes">Sort by Likes</a>
+            <a asp-action="Index" asp-route-filter="dislikes">Sort by Dislikes</a>
+        </div>
+    </div>
 </div>
 
 

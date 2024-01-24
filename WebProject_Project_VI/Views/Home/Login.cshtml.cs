@@ -7,6 +7,8 @@ namespace WebProject_Project_VI.Views.Home
     {
         public void OnGet()
         {
+
+
         }
     }
 }

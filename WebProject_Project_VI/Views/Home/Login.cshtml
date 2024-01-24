@@ -8,17 +8,17 @@
 <html>
 <body>
 
-<h1>The form method="get" attribute</h1>
+<h1>Login to account!</h1>
 
-<form action="/action_page.php" method="get" target="_blank">
-  <label for="fname">First name:</label>
-  <input type="text" id="fname" name="fname"><br><br>
-  <label for="lname">Last name:</label>
-  <input type="text" id="lname" name="lname"><br><br>
-  <input type="submit" value="Submit">
-</form>
+    <div>
+        <form asp-action="LoginValidate" method="post">
+            <label for="username">Username:</label><br>
+            <input type="text" id="title" name="title" value=""><br>
+            <label for="password">Password:</label><br>
+            <input type="text" id="password" name="password" value=""><br><br>
+            <input type="submit" value="Submit">
+        </form>
 
-<p>Click on the submit button, and the input will be sent to a page on the server called "action_page.php".</p>
-
+    </div>
 </body>
 </html>
