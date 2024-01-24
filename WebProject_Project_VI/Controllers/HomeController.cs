@@ -152,6 +152,29 @@ namespace WebProject_Project_VI.Controllers
                 return RedirectToAction("Index", new { filter = "date" });
         }
 
+        public IActionResult EditPost(int postId)
+        {
+            var postToEdit = posts.FirstOrDefault(p => p.PostId == postId);
+            if (postToEdit != null)
+            {
+                return View(postToEdit);
+            }
+            return RedirectToAction("Index");
+        }
+
+        //  This action is needed to update an existing post after editing. 
+        public IActionResult UpdatePost(int postId, string title, string content)
+        {
+            var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
+            if (postToUpdate != null)
+            {
+                postToUpdate.PostTitle = title;
+                postToUpdate.Content = content;
+                // Update other fields if necessary
+                return RedirectToAction("Index");
+            }
+            return View("EditPost", new Post { PostId = postId, PostTitle = title, Content = content });
+        }
 
         public IActionResult FetchPost(int postId, string authorName,  string content, string title, int likecount, int dislikecount, int viewcount, string date)
         {
