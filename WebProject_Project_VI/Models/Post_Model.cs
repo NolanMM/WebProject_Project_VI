@@ -5,6 +5,8 @@ namespace WebProject_Project_VI.Models
     public class Post_Model : IData
     {
         [Required]
+        public int PostId { get; set; }
+        [Required]
         public string? Title { get; set; } = String.Empty;          // Title of the post
         [Required]
         public string? Content { get; set; } = String.Empty;        // Content of the post

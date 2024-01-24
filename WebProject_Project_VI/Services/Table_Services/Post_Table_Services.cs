@@ -88,14 +88,15 @@ namespace WebProject_Project_VI.Services.Table_Services
                     {
                         var post = new Post_Model
                         {
-                            Title = reader.GetString(0),
-                            Content = reader.GetString(1),
-                            Author = reader.GetString(2),
-                            Number_Of_Likes = reader.GetInt32(3),
-                            Number_Of_DisLikes = reader.GetInt32(4),
-                            Is_Public = reader.GetBoolean(5),
-                            Number_Of_Visits = reader.GetInt32(6),
-                            Date = reader.GetDateTime(7)
+                            PostId = reader.GetInt32(0),
+                            Title = reader.GetString(1),
+                            Content = reader.GetString(2),
+                            Author = reader.GetString(3),
+                            Number_Of_Likes = reader.GetInt32(4),
+                            Number_Of_DisLikes = reader.GetInt32(5),
+                            Is_Public = reader.GetBoolean(6),
+                            Number_Of_Visits = reader.GetInt32(7),
+                            Date = reader.GetDateTime(8)
                         };
                         data.Add(post);
                     }
@@ -168,9 +169,9 @@ namespace WebProject_Project_VI.Services.Table_Services
                 await Connection.OpenAsync();
 
                 string sql = $"INSERT INTO {schema}.{table_name} " +
-                             "(Title, Content, Author, Number_Of_Likes, Number_Of_DisLikes, Is_Public, Number_Of_Visits, Date) " +
+                             "(PostId, Title, Content, Author, Number_Of_Likes, Number_Of_DisLikes, Is_Public, Number_Of_Visits, Date) " +
                              "VALUES " +
-                             "(@Title, @Content, @Author, @Number_Of_Likes, @Number_Of_DisLikes, @Is_Public, @Number_Of_Visits, @Date);";
+                             "(@PostId, @Title, @Content, @Author, @Number_Of_Likes, @Number_Of_DisLikes, @Is_Public, @Number_Of_Visits, @Date);";
 
                 using var cmd = new MySqlCommand(sql, Connection);
 
@@ -179,6 +180,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                 post.Number_Of_Visits = 0;
                 post.Date = DateTime.Now;
 
+                cmd.Parameters.AddWithValue("@PostId", post.PostId);
                 cmd.Parameters.AddWithValue("@Title", post.Title);
                 cmd.Parameters.AddWithValue("@Content", post.Content);
                 cmd.Parameters.AddWithValue("@Author", post.Author);
@@ -202,7 +204,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(string Title, string Content, string Author, bool? Is_Public)
+        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(string Posst_ID,string Title, string Content, string Author, bool? Is_Public)
         {
             if(connection_string == null)
             {
@@ -215,12 +217,13 @@ namespace WebProject_Project_VI.Services.Table_Services
                 await Connection.OpenAsync();
 
                 string sql = $"INSERT INTO {schema}.{table_name} " +
-                             "(Title, Content, Author, Number_Of_Likes, Number_Of_DisLikes, Is_Public, Number_Of_Visits, Date) " +
+                             "(PostId, Title, Content, Author, Number_Of_Likes, Number_Of_DisLikes, Is_Public, Number_Of_Visits, Date) " +
                              "VALUES " +
-                             "(@Title, @Content, @Author, @Number_Of_Likes, @Number_Of_DisLikes, @Is_Public, @Number_Of_Visits, @Date);";
+                             "(@PostId, @Title, @Content, @Author, @Number_Of_Likes, @Number_Of_DisLikes, @Is_Public, @Number_Of_Visits, @Date);";
 
                 using var cmd = new MySqlCommand(sql, Connection);
 
+                cmd.Parameters.AddWithValue("@PostId", Posst_ID);
                 cmd.Parameters.AddWithValue("@Title", Title);
                 cmd.Parameters.AddWithValue("@Content", Content);
                 cmd.Parameters.AddWithValue("@Author", Author);
@@ -236,6 +239,36 @@ namespace WebProject_Project_VI.Services.Table_Services
 
                 // If at least one row was affected, consider the operation successful
                 return affectedRows > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+
+        public async Task<bool> Delete_Post_By_Post_ID_Async(string? Post_ID)
+        {
+            if (connection_string == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                using MySqlConnection connection = new MySqlConnection(connection_string);
+                await connection.OpenAsync();
+
+                string sql = $"DELETE FROM {schema}.{table_name} WHERE `PostId` = \"" + Post_ID + "\";";
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                {
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                    await connection.CloseAsync();
+
+                    return rowsAffected > 0;
+                }
             }
             catch (Exception ex)
             {
@@ -322,6 +355,57 @@ namespace WebProject_Project_VI.Services.Table_Services
                 return null;
             }
         }
+
+        public async Task<Post_Model?> Read_Post_Data_By_Post_ID_Async(string? Post_Id)
+        {
+            if (connection_string == null)
+            {
+                return null;
+            }
+            if (Post_Id == null)
+            {
+                return null;
+            }
+            try
+            {
+                using MySqlConnection connection = new MySqlConnection(connection_string);
+                await connection.OpenAsync();
+
+                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `PostId` = \"" + Post_Id + "\";";
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                {
+                    using (MySqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        List<Post_Model> _data = new List<Post_Model>();
+                        while (await reader.ReadAsync())
+                        {
+                            var post = new Post_Model
+                            {
+                                PostId = reader.GetInt32(0),
+                                Title = reader.GetString(1),
+                                Content = reader.GetString(2),
+                                Author = reader.GetString(3),
+                                Number_Of_Likes = reader.GetInt32(4),
+                                Number_Of_DisLikes = reader.GetInt32(5),
+                                Is_Public = reader.GetBoolean(6),
+                                Number_Of_Visits = reader.GetInt32(7),
+                                Date = reader.GetDateTime(8)
+                            };
+                            _data.Add(post);
+                        }
+                        await connection.CloseAsync();
+                        return _data.FirstOrDefault();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+
         public async Task<List<IData>?> Read_Post_Data_By_Author_Async(string? author)
         {
             if (connection_string == null)
@@ -348,14 +432,15 @@ namespace WebProject_Project_VI.Services.Table_Services
                         {
                             var post = new Post_Model
                             {
-                                Title = reader.GetString(0),
-                                Content = reader.GetString(1),
-                                Author = reader.GetString(2),
-                                Number_Of_Likes = reader.GetInt32(3),
-                                Number_Of_DisLikes = reader.GetInt32(4),
-                                Is_Public = reader.GetBoolean(5),
-                                Number_Of_Visits = reader.GetInt32(6),
-                                Date = reader.GetDateTime(7)
+                                PostId = reader.GetInt32(0),
+                                Title = reader.GetString(1),
+                                Content = reader.GetString(2),
+                                Author = reader.GetString(3),
+                                Number_Of_Likes = reader.GetInt32(4),
+                                Number_Of_DisLikes = reader.GetInt32(5),
+                                Is_Public = reader.GetBoolean(6),
+                                Number_Of_Visits = reader.GetInt32(7),
+                                Date = reader.GetDateTime(8)
                             };
                             _data.Add(post);
                         }
@@ -371,25 +456,50 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> Update_Post_Data_String_By_Title_Async(string? title, string? propertyUpdated, string? newValue, Type property_Type)
+        public async Task<bool> Update_Post_Data_String_By_Title_Async(int? Post_ID,string? title, string? propertyUpdated, string? newValue, Type property_Type)
         {
+            if(title != null && Post_ID != null)
+            {
+                return false;
+            }
             if (connection_string == null)
             {
                 return false;
             }
-            if(title == null || propertyUpdated == null || newValue == null)
+            if(title == null && Post_ID == null || propertyUpdated == null || newValue == null)
             {
                 return false;
             }
+
+            string sql_first = String.Empty;
+            string sql_tails = String.Empty;
+
+            string By_Property = String.Empty;
+            string By_Property_Values = String.Empty;
+
+            if (Post_ID != null) {
+                By_Property_Values = Post_ID.ToString();
+                By_Property = "PostId";
+                sql_first = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` =";
+                sql_tails = "WHERE `" + By_Property + "` = \"" + By_Property_Values + "\";";
+            }
+            if (title != null)
+            {
+                By_Property_Values = title;
+                By_Property = "Title";
+                sql_first = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` =";
+                sql_tails = "WHERE `" + By_Property + "` = \"" + By_Property_Values + "\";";
+            }
             // Cast the newValue to the property_Type
-            if(property_Type == typeof(string))
+            if (property_Type == typeof(string))
             {
                 try
                 {
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
 
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = \"" + newValue +"\" WHERE `Title` = \"" + title + "\";";
+                    // $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` =" + "\"" + newValue + "\" " + "WHERE `" + By_Property + "` = \"" + By_Property_Values + "\";"
+                    string sql = sql_first + "\"" + newValue + "\" " + sql_tails;
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
@@ -413,7 +523,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
                     int _newValue = Convert.ToInt32(newValue);
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = " + _newValue + " WHERE `Title` = \"" + title + "\";";
+                    string sql = sql_first + " " + _newValue + " " + sql_tails;
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
@@ -438,7 +548,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                     await connection.OpenAsync();
                     bool _newValue = Convert.ToBoolean(newValue);
 
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = " + _newValue + " WHERE `Title` = \"" + title + "\";";
+                    string sql = sql_first + " " + _newValue + " " + sql_tails;
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {
@@ -462,7 +572,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                     using MySqlConnection connection = new MySqlConnection(connection_string);
                     await connection.OpenAsync();
                     //DateTime _newValue = Convert.ToDateTime(newValue);
-                    string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = \"" + newValue + "\" WHERE `Title` = \"" + title + "\";";
+                    string sql = sql_first + "\"" + newValue + "\" " + sql_tails;
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                     {

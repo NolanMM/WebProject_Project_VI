@@ -20,7 +20,7 @@ namespace WebProject_Project_VI.Controllers
 
         private static Boolean AccountSecured = false;
 
-        private static string UserName;
+        private static string? UserName = String.Empty;
 
         private static List<Post> posts = new List<Post>();
 
