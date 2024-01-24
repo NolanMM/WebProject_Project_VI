@@ -1,0 +1,17 @@
+﻿@page
+@model WebProject_Project_VI.Views.Home.LoginModel
+@{
+}
+
+<div>
+    <h1>Login to account!</h1>
+
+        <form asp-action="LoginValidate" method="post">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" value=""><br>
+            <label for="password">Password:</label><br>
+            <input type="text" id="password" name="password" value=""><br><br>
+            <input type="submit" value="Submit">
+        </form>
+
+ </div>
