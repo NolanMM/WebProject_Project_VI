@@ -163,17 +163,16 @@ namespace WebProject_Project_VI.Controllers
         }
 
         //  This action is needed to update an existing post after editing. 
-        public IActionResult UpdatePost(int postId, string title, string content)
+        public IActionResult UpdatePost(int postId, string content)
         {
             var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
             if (postToUpdate != null)
             {
-                postToUpdate.PostTitle = title;
                 postToUpdate.Content = content;
                 // Update other fields if necessary
                 return RedirectToAction("Index");
             }
-            return View("EditPost", new Post { PostId = postId, PostTitle = title, Content = content });
+            return View("EditPost", new Post { PostId = postId, PostTitle = postToUpdate.PostTitle, Content = content });
         }
 
         public IActionResult FetchPost(int postId, string authorName,  string content, string title, int likecount, int dislikecount, int viewcount, string date)
