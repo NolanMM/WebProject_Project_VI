@@ -103,6 +103,25 @@
         });
     }
 
+    function DeletePost(postId) {
+        $.ajax({
+            url: '@Url.Action("DeletePost", "Home")',
+            type: 'DELETE',
+            data: { postId: postId },
+            success: function (result) {
+                if (result.success) {
+                    // Reload the page if removed successfully 
+                    location.reload();
+                } else {
+                    alert('Error deleting the post.');
+                }
+            },
+            error: function () {
+                console.error('Failed to delete post.');
+            }
+        });
+    }
+
     function handleClick(postId) {
         toggleAccordion(postId);
         incrementViews(postId);

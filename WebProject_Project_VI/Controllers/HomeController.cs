@@ -120,8 +120,8 @@ namespace WebProject_Project_VI.Controllers
 			if (postToDelete != null)
 			{
 				posts.Remove(postToDelete);
-				return Json(new { success = true });
-			}
+                return Json(new { success = true });
+            }
 
             // Return error if can't delete the post.
 			return Json(new { success = false, error = "Error deleting the post" });
