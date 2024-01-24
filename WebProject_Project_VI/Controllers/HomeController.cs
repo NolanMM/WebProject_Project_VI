@@ -16,9 +16,11 @@ namespace WebProject_Project_VI.Controllers
 
         private static Boolean AccountSecured = false;
 
+        private static string UserName;
+
         private static List<Post> posts = new List<Post>();
 
-        private static int IdIncrement; // check to see if this int is greater then the greatest int in the db or else making posts will break
+        private static int IdIncrement;
 
         public IActionResult Index(string filter)
         {
@@ -103,15 +105,16 @@ namespace WebProject_Project_VI.Controllers
             }
         }
 
-        public IActionResult CreatePost(string title, string content)
+        public IActionResult CreatePost(string authorName, string title, string content)
         {
 
-                IdIncrement++; // check top of page for comment on fixes / development needs
+                IdIncrement++;
+                authorName = UserName;
 
                 var newPost = new Post
                 {
                     PostId = IdIncrement,
-                    AuthorName = "YourAuthorName", // Replace with the actual authors username from session file / viewbag file
+                    AuthorName = authorName, // Replace with the actual authors username from session file / viewbag file
                     PostTitle = title,
                     DateTime = DateTime.Now.ToString(),
                     Content = content,
@@ -130,6 +133,13 @@ namespace WebProject_Project_VI.Controllers
 
         public IActionResult FetchPost(int postId, string authorName,  string content, string title, int likecount, int dislikecount, int viewcount, string date)
         {
+
+            // check increment with postID
+            if (IdIncrement <= postId)
+            {
+                IdIncrement = postId;
+            }
+
             var newPost = new Post
             {
                 PostId = postId,
@@ -169,21 +179,37 @@ namespace WebProject_Project_VI.Controllers
             return View();
         }
 
-        public IActionResult LoginValidate(string userName, string passWord)
+        public IActionResult LoginValidate(string username, string password)
         {
 
+
+            string User = "liam";
+            string Pass = "bob";
+
             //check to see if the account is valid 
+            if (username == User)
+            {
+                if (password == Pass)
+                {
+                    //save the account name as a viewbag / session file for use else where
+                    UserName = username;
 
+                    //change AccountSecured to true
+                    AccountSecured = true;
 
-            //save the account name as a viewbag / session file for use else where
-            //change AccountSecured to true
-
-
-            //if not Redirect them to try again
-
-
-            // Redirect to the home page or wherever you want to go after the form submission
-            return RedirectToAction("Index", new { filter = "date" });
+                    // Redirect to the index or wherever you want to go after the form submission
+                    return RedirectToAction("Index", new { filter = "date" });
+                }
+                else   //if not Redirect them to try again
+                {
+                    // Redirect to theLogin or wherever you want to go after login fail
+                    return RedirectToAction("Login");
+                }
+            }
+           
+                // Redirect to theLogin or wherever you want to go after login fail
+                return RedirectToAction("Login");
+            
         }
 
         public IActionResult Privacy()
