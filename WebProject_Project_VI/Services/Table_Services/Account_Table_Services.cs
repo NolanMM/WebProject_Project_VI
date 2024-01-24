@@ -305,13 +305,10 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = @NewValue WHERE `Username` = @Username;";
+                string sql = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` = \"" + newValue + "\" WHERE `Username` = \"" + username + "\";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                 {
-                    cmd.Parameters.AddWithValue("@Username", username);
-                    cmd.Parameters.AddWithValue("@NewValue", newValue);
-
                     int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                     await connection.CloseAsync();
