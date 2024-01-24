@@ -1,0 +1,17 @@
+﻿@page
+@model WebProject_Project_VI.Views.Home.NewPostModel
+@{
+}
+
+<div>
+    <h1>Create a Post!</h1>
+
+    <form asp-action="CreatePost" method="post">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" value=""><br>
+        <label for="content">Content:</label><br>
+        <input type="text" id="content" name="content" value=""><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+</div>

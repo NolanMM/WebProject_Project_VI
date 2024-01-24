@@ -81,11 +81,3 @@ Likesbutton {
 .likesbtn:focus {
     outline: none;
 }
-
-.green {
-    color: green;
-}
-
-.red {
-    color: red;
-}

@@ -13,19 +13,100 @@ namespace WebProject_Project_VI.Controllers
             _logger = logger;
         }
 
+        private static List<Post> posts = new List<Post>();
+
+        private static int IdIncrement;
+
         public IActionResult Index()
         {
-
-            // Simulated data - replace this with your actual data retrieval logic
-            List<Post> posts = new List<Post>
-            {
-            new Post { AuthorName = "Author1", PostTitle = "Title1", Content = "Content1", LikeCount = 10, DislikeCount = 0, ViewCount = 100 },
-            new Post { AuthorName = "Author2", PostTitle = "Title2", Content = "Content2", LikeCount = 0, DislikeCount = 0, ViewCount = 0 },
-            new Post { AuthorName = "Author3", PostTitle = "Title3", Content = "Content3", LikeCount = 0, DislikeCount = 0, ViewCount = 0 },
-            new Post { AuthorName = "Liam", PostTitle = "Trafalgar Law is best character", Content = "Trafalgar D. Water Law, more commonly known as just Trafalgar Law and by his epithet as the Surgeon of Death, is a pirate from the North Blue and the captain and doctor of the Heart Pirates. He is one of twelve pirates who are referred to as the Worst Generation. He became one of the Seven Warlords of the Sea during the timeskip,but his position was revoked for allying with the Straw Hat Pirates. Law, like many other pirates, dreams of finding the One Piece, while also desiring to know the purpose of the Will of D.", LikeCount = 99999, DislikeCount = 0, ViewCount = 999999999 }
-            };
-
             return View(posts);
+        }
+
+        public IActionResult IncrementViews(int postId)
+        {
+            // Find the post in the list based on the postId
+            var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
+
+            if (postToUpdate != null)
+            {
+                // Increment the view count for the specified post
+                postToUpdate.ViewCount++;
+                return Json(new { success = true, viewsCount = postToUpdate.ViewCount });
+            }
+            else
+            {
+                // Handle the case where the post with the specified postId is not found
+                return Json(new { success = false, error = "Post not found" });
+            }
+        }
+
+        public IActionResult IncrementLikes(int postId)
+        {
+            // Find the post in the list based on the postId
+            var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
+
+            if (postToUpdate != null)
+            {
+                // Increment the like count for the specified post
+                postToUpdate.LikeCount++;
+                return Json(new { success = true, likesCount = postToUpdate.LikeCount });
+            }
+            else
+            {
+                // Handle the case where the post with the specified postId is not found
+                return Json(new { success = false, error = "Post not found" });
+            }
+        }
+
+        public IActionResult IncrementDislikes(int postId)
+        {
+            // Find the post in the list based on the postId
+            var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
+
+            if (postToUpdate != null)
+            {
+                // Increment the like count for the specified post
+                postToUpdate.DislikeCount++;
+                return Json(new { success = true, dislikesCount = postToUpdate.DislikeCount });
+            }
+            else
+            {
+                // Handle the case where the post with the specified postId is not found
+                return Json(new { success = false, error = "Post not found" });
+            }
+        }
+
+        public IActionResult CreatePost(string title, string content)
+    {
+        // Assuming you have a list of posts in your HomeController
+        // Replace this with the actual list in your application
+        // Create a new post
+
+
+        IdIncrement++;
+
+        var newPost = new Post
+        {
+            PostId = IdIncrement,
+            AuthorName = "YourAuthorName", // Replace with the actual author's name
+            PostTitle = title,
+            DateTime = DateTime.Now.ToString(), // Set the current date and time
+            Content = content,
+            LikeCount = 0,
+            DislikeCount = 0,
+            ViewCount = 0
+        };
+
+        // Add the new post to the list
+        posts.Add(newPost);
+
+        // Redirect to the home page or wherever you want to go after the form submission
+        return RedirectToAction("Index");
+    }
+
+        public IActionResult NewPost()
+        {
+            return View();
         }
 
         public IActionResult Login()

@@ -10,6 +10,10 @@
 <!-- Page Title / Welcome Message -->
 <div class="text-center">
     <h1 class="display-4">Welcome To the Site</h1>
+
+
+    <!-- Add the "New Post" button here -->
+    <a asp-action="NewPost" class="btn btn-primary">New Post</a>
 </div>
 
 
@@ -18,31 +22,80 @@
 {
     <!-- Create an accordian item -->
     <div class="accordion-item">
-        <div class="accordion-header collapsed" onclick="toggleAccordion('@post.AuthorName')">
+        <div class="accordion-header collapsed" onclick="handleClick('@post.PostId');">
             <div class="header-content">
                 <div class="left-content">
                     <!-- Put the Authors Name, Post Title and Date of Publication in accordian header -->
-                    @($"{post.AuthorName} - {post.PostTitle} - Date")
+                    @($"{post.AuthorName} - {post.PostTitle} - {post.DateTime}")
                 </div>
                 <div class="right-content">
                     <!-- Put the Likes, Dislike and Views icons and number in accordian header -->
-                    <span class="thumbs-up" onclick="toggleLikeDislike('@post.AuthorName', 'like')"><i class="fa fa-thumbs-up"></i> <span id="likes@post.AuthorName">@post.LikeCount</span></span>
-                    <span class="thumbs-down" onclick="toggleLikeDislike('@post.AuthorName', 'dislike')"><i class="fa fa-thumbs-down"></i> <span id="dislikes@post.AuthorName">@post.DislikeCount</span></span>
-                    <span class="views" onclick="incrementViews('@post.AuthorName')"><i class="fa fa-eye"></i> <span id="views@post.AuthorName">@post.ViewCount</span></span>
+                    <span class="thumbs-up" onclick="incrementLikes('@post.PostId')"><i class="fa fa-thumbs-up"></i> <span id="likes@post.PostId">@post.LikeCount</span></span>
+                    <span class="thumbs-down" onclick="incrementDislikes('@post.PostId')"><i class="fa fa-thumbs-down"></i> <span id="dislikes@post.PostId">@post.DislikeCount</span></span>
+                    <span class="views" onclick="incrementViews('@post.PostId')"><i class="fa fa-eye"></i> <span id="views@post.PostId">@post.ViewCount</span></span>
                 </div>
             </div>
         </div>
-        <div id="@post.AuthorName" class="accordion-body">
+        <div id="@post.PostId" class="accordion-body">
             <!-- Put the Content of the post in the accordian body -->
             <strong>@post.Content</strong>
-            <div class="like-dislike-buttons">
-                <!-- Put the Like and Dislike Button in the accordian body -->
-                <button class="likesbtn" id="likeButton@post.AuthorName" onclick="toggleLikeDislike('@post.AuthorName', 'like')"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i></button>
-                <button class="likesbtn" id="dislikeButton@post.AuthorName" onclick="toggleLikeDislike('@post.AuthorName', 'dislike')"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true"></i></button>
-            </div>
         </div>
-    </div>
+   </div>
 }
+<script>
+    function incrementLikes(postId) {
+        // Make an AJAX call to the IncrementLikes action in HomeController
+        $.ajax({
+            url: '@Url.Action("IncrementLikes", "Home")',
+            type: 'POST',
+            data: { postId: postId },
+            success: function (result) {
+                // Update the like count on the UI
+                $('#likes' + postId).text(result.likesCount);
+            },
+            error: function () {
+                console.error('Failed to increment likes.');
+            }
+        });
+    }
+
+    function incrementDislikes(postId) {
+        // Make an AJAX call to the IncrementDislikes action in HomeController
+        $.ajax({
+            url: '@Url.Action("IncrementDislikes", "Home")',
+            type: 'POST',
+            data: { postId: postId },
+            success: function (result) {
+                // Update the dislikelike count on the UI
+                $('#dislikes' + postId).text(result.dislikesCount);
+            },
+            error: function () {
+                console.error('Failed to increment dislikes.');
+            }
+        });
+    }
+
+    function incrementViews(postId) {
+        // Make an AJAX call to the IncrementViews action in HomeController
+        $.ajax({
+            url: '@Url.Action("IncrementViews", "Home")',
+            type: 'POST',
+            data: { postId: postId },
+            success: function (result) {
+                // Update the view count on the UI
+                $('#views' + postId).text(result.viewsCount);
+            },
+            error: function () {
+                console.error('Failed to increment views.');
+            }
+        });
+    }
+
+    function handleClick(postId) {
+        toggleAccordion(postId);
+        incrementViews(postId);
+    }
+</script>
 
 
 <script src="~/js/site.js"></script>
