@@ -30,6 +30,8 @@ namespace WebProject_Project_VI.Controllers
         {
             List<Post> filteredPosts;
 
+            ViewBag.UserName = UserName;
+
             // Apply filtering based on the selected option
             switch (filter)
             {
@@ -109,6 +111,22 @@ namespace WebProject_Project_VI.Controllers
             }
         }
 
+        public IActionResult DeletePost(int postId)
+        {
+            // Lambda expression to find the post to delete
+			var postToDelete = posts.FirstOrDefault(p => p.PostId == postId);
+
+            // If the post is found -> then delete
+			if (postToDelete != null)
+			{
+				posts.Remove(postToDelete);
+                return Json(new { success = true });
+            }
+
+            // Return error if can't delete the post.
+			return Json(new { success = false, error = "Error deleting the post" });
+		}
+
         public IActionResult CreatePost(string authorName, string title, string content)
         {
 
@@ -134,6 +152,28 @@ namespace WebProject_Project_VI.Controllers
                 return RedirectToAction("Index", new { filter = "date" });
         }
 
+        public IActionResult EditPost(int postId)
+        {
+            var postToEdit = posts.FirstOrDefault(p => p.PostId == postId);
+            if (postToEdit != null)
+            {
+                return View(postToEdit);
+            }
+            return RedirectToAction("Index");
+        }
+
+        //  This action is needed to update an existing post after editing. 
+        public IActionResult UpdatePost(int postId, string content)
+        {
+            var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
+            if (postToUpdate != null)
+            {
+                postToUpdate.Content = content;
+                // Update other fields if necessary
+                return RedirectToAction("Index");
+            }
+            return View("EditPost", new Post { PostId = postId, PostTitle = postToUpdate.PostTitle, Content = content });
+        }
 
         public IActionResult FetchPost(int postId, string authorName,  string content, string title, int likecount, int dislikecount, int viewcount, string date)
         {
@@ -200,6 +240,9 @@ namespace WebProject_Project_VI.Controllers
 
                     //change AccountSecured to true
                     AccountSecured = true;
+
+                    //Assign the new username to ViewBag
+                    ViewBag.UserName = UserName;
 
                     // Redirect to the index or wherever you want to go after the form submission
                     return RedirectToAction("Index", new { filter = "date" });
