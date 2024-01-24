@@ -44,6 +44,7 @@
                     <span class="thumbs-up" onclick="incrementLikes('@post.PostId')"><i class="fa fa-thumbs-up"></i> <span id="likes@post.PostId">@post.LikeCount</span></span>
                     <span class="thumbs-down" onclick="incrementDislikes('@post.PostId')"><i class="fa fa-thumbs-down"></i> <span id="dislikes@post.PostId">@post.DislikeCount</span></span>
                     <span class="views" onclick="incrementViews('@post.PostId')"><i class="fa fa-eye"></i> <span id="views@post.PostId">@post.ViewCount</span></span>
+                    @if (post.AuthorName == ViewBag.UserName) { <span class="delete" onclick="DeletePost('@post.PostId')"><i class="fa fa-trash"></i> </span> }
                 </div>
             </div>
         </div>

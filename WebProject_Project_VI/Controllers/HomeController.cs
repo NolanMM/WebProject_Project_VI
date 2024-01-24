@@ -30,6 +30,8 @@ namespace WebProject_Project_VI.Controllers
         {
             List<Post> filteredPosts;
 
+            ViewBag.UserName = UserName;
+
             // Apply filtering based on the selected option
             switch (filter)
             {
@@ -108,6 +110,22 @@ namespace WebProject_Project_VI.Controllers
                 return Json(new { success = false, error = "Post not found" });
             }
         }
+
+        public IActionResult DeletePost(int postId)
+        {
+            // Lambda expression to find the post to delete
+			var postToDelete = posts.FirstOrDefault(p => p.PostId == postId);
+
+            // If the post is found -> then delete
+			if (postToDelete != null)
+			{
+				posts.Remove(postToDelete);
+				return Json(new { success = true });
+			}
+
+            // Return error if can't delete the post.
+			return Json(new { success = false, error = "Error deleting the post" });
+		}
 
         public IActionResult CreatePost(string authorName, string title, string content)
         {
@@ -200,6 +218,9 @@ namespace WebProject_Project_VI.Controllers
 
                     //change AccountSecured to true
                     AccountSecured = true;
+
+                    //Assign the new username to ViewBag
+                    ViewBag.UserName = UserName;
 
                     // Redirect to the index or wherever you want to go after the form submission
                     return RedirectToAction("Index", new { filter = "date" });
