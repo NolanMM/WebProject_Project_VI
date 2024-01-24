@@ -1,7 +1,12 @@
+using WebProject_Project_VI.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+// adding filter service
+builder.Services.AddScoped<PostFilterService>();
+
 // Add logging services to the container.
 builder.Services.AddLogging(builder =>
 {

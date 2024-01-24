@@ -11,10 +11,13 @@ namespace WebProject_Project_VI.Controllers
     {
         private ILogger<HomeController>? _logger { get; set; }
         private readonly IConfiguration _configuration;
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
+        private readonly PostFilterService _postFilterService;
+
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration, PostFilterService postFilterService)
         {
             _logger = logger;
             _configuration = configuration;
+            _postFilterService = postFilterService;
             _logger.LogInformation("Created HomeController && IConfiguration constructor successfully!");
         }
 
@@ -28,34 +31,13 @@ namespace WebProject_Project_VI.Controllers
 
         public IActionResult Index(string filter)
         {
-            List<Post> filteredPosts;
-
-            // Apply filtering based on the selected option
-            switch (filter)
-            {
-                case "date":
-                    filteredPosts = posts.OrderBy(p => p.DateTime).ToList();
-                    break;
-                case "views":
-                    filteredPosts = posts.OrderByDescending(p => p.ViewCount).ToList();
-                    break;
-                case "likes":
-                    filteredPosts = posts.OrderByDescending(p => p.LikeCount).ToList();
-                    break;
-                case "dislikes":
-                    filteredPosts = posts.OrderByDescending(p => p.DislikeCount).ToList();
-                    break;
-                default:
-                    // Default sorting by date
-                    filteredPosts = posts.OrderBy(p => p.DateTime).ToList();
-                    break;
-            }
-
+            var filteredPosts = _postFilterService.FilterPosts(posts, filter);
             ViewData["Filter"] = filter; // Pass the selected filter to the view
             return View(filteredPosts);
         }
 
-    public IActionResult IncrementViews(int postId)
+
+        public IActionResult IncrementViews(int postId)
         {
             // Find the post in the list based on the postId
             var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
