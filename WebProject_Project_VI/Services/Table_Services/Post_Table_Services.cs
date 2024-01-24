@@ -204,7 +204,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(string Posst_ID,string Title, string Content, string Author, bool? Is_Public)
+        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(int Post_ID,string Title, string Content, string Author, bool? Is_Public)
         {
             if(connection_string == null)
             {
@@ -223,7 +223,7 @@ namespace WebProject_Project_VI.Services.Table_Services
 
                 using var cmd = new MySqlCommand(sql, Connection);
 
-                cmd.Parameters.AddWithValue("@PostId", Posst_ID);
+                cmd.Parameters.AddWithValue("@PostId", Post_ID);
                 cmd.Parameters.AddWithValue("@Title", Title);
                 cmd.Parameters.AddWithValue("@Content", Content);
                 cmd.Parameters.AddWithValue("@Author", Author);
@@ -247,7 +247,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<bool> Delete_Post_By_Post_ID_Async(string? Post_ID)
+        public async Task<bool> Delete_Post_By_Post_ID_Async(int? Post_ID)
         {
             if (connection_string == null)
             {
@@ -259,7 +259,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"DELETE FROM {schema}.{table_name} WHERE `PostId` = \"" + Post_ID + "\";";
+                string sql = $"DELETE FROM {schema}.{table_name} WHERE `PostId` = " + Post_ID + ";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                 {
@@ -333,14 +333,15 @@ namespace WebProject_Project_VI.Services.Table_Services
                         {
                             var post = new Post_Model
                             {
-                                Title = reader.GetString(0),
-                                Content = reader.GetString(1),
-                                Author = reader.GetString(2),
-                                Number_Of_Likes = reader.GetInt32(3),
-                                Number_Of_DisLikes = reader.GetInt32(4),
-                                Is_Public = reader.GetBoolean(5),
-                                Number_Of_Visits = reader.GetInt32(6),
-                                Date = reader.GetDateTime(7)
+                                PostId = reader.GetInt32(0),
+                                Title = reader.GetString(1),
+                                Content = reader.GetString(2),
+                                Author = reader.GetString(3),
+                                Number_Of_Likes = reader.GetInt32(4),
+                                Number_Of_DisLikes = reader.GetInt32(5),
+                                Is_Public = reader.GetBoolean(6),
+                                Number_Of_Visits = reader.GetInt32(7),
+                                Date = reader.GetDateTime(8)
                             };
                             _data.Add(post);
                         }

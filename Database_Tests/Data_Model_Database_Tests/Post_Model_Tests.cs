@@ -36,7 +36,7 @@ namespace Database_Tests.Data_Model_Database_Tests
             Post_Model post = new Post_Model();
 
             // Act
-            string[] expectedProperties = { "Title", "Content", "Author", "Number_Of_Likes", "Number_Of_DisLikes", "Is_Public", "Number_Of_Visits", "Date" };
+            string[] expectedProperties = {"PostId", "Title", "Content", "Author", "Number_Of_Likes", "Number_Of_DisLikes", "Is_Public", "Number_Of_Visits", "Date" };
             string[] actualProperties = post.Get_Property();
 
             // Assert
@@ -61,6 +61,7 @@ namespace Database_Tests.Data_Model_Database_Tests
             // Act
             var expectedKeyValuePair = new System.Collections.Generic.Dictionary<string, Type>
             {
+                { "PostId", typeof(int) },
                 { "Title", typeof(string) },
                 { "Content", typeof(string) },
                 { "Author", typeof(string) },

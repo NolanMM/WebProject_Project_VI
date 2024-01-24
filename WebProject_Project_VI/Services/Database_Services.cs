@@ -45,6 +45,35 @@ namespace WebProject_Project_VI.Services
                 return null;
             }
         }
+        public Database_Services? Set_Up_Database_Services(ILogger<HomeController>? logger, string? SessionID)
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            if (SessionID == null)
+            {
+                if (_logger != null)
+                    _logger.LogError("Failed to create Database Services constructor!");
+                return null;
+            }
+            _instance = new Database_Services();
+            if (configuration == null || SessionID == null)
+            {
+                _logger.LogError("Failed to create Database Services constructor!");
+                return null;
+            }
+            _configuration = configuration;
+            SesionID = SessionID;
+            _account_Table_Services = _account_Table_Services.Set_Up_Account_Table_Services(SessionID, configuration);
+            _post_Table_Services = _post_Table_Services.Set_Up_Post_Table_Services(SessionID, configuration);
+            _logger = logger;
+
+            if(_logger != null)
+                _logger.LogInformation($"Created Database Services constructor for SessionID: {SessionID} successfully!");
+
+            return _instance;
+        }
         public string ? Get_Session_Id()
         {
             return SesionID;
@@ -215,7 +244,7 @@ namespace WebProject_Project_VI.Services
                 return post_Models;
             }
         }
-        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(string? Post_ID, string? Title, string? Content, string? Author, bool? Is_Public)
+        public async Task<bool> Create_Post_Data_By_Passing_Values_Async(int Post_ID, string? Title, string? Content, string? Author, bool? Is_Public)
         {
             if(Post_ID ==null || Title == null || Content == null || Author == null || Is_Public == null)
             {
