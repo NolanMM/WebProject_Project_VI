@@ -1,21 +1,20 @@
 ﻿@page
-@model WebProject_Project_VI.Views.Home.LoginModel
+@model WebProject_Project_VI.Views.Home.CreateAccountModel
 @{
 }
 
-<div>
-    <h1>Login to account!</h1>
 
-        <form asp-action="LoginValidate" method="post">
+<div>
+    <h1>Create account!</h1>
+
+        <form asp-action="CreateAccountValidate" method="post">
             <label for="username">Username:</label><br>
             <input type="text" id="username" name="username" value=""><br>
+            <label for="authorname">Authorname:</label><br>
+            <input type="text" id="authorname" name="authorname" value=""><br>
             <label for="password">Password:</label><br>
             <input type="text" id="password" name="password" value=""><br><br>
             <input type="submit" value="Submit">
         </form>
-
-    <h1>Don't have an account yet? Create one now by clicking the button below!</h1>
-    <!-- Add the "Create Account" button here -->
-    <a asp-action="CreateAccount" class="dropbtn">Create Account</a>
 
  </div>

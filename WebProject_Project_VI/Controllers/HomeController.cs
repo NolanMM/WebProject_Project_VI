@@ -217,11 +217,38 @@ namespace WebProject_Project_VI.Controllers
             }
         }
 
+
+        public IActionResult CreateAccount()
+        {
+
+            return View();
+        }
+
+        public IActionResult CreateAccountValidate(string username, string authorname, string password)
+        {
+
+
+            // check to see if the account already exists or if the author name is already taken
+
+            // if name not taken send the account info to the database
+            // Redirect to the login after account is created
+            return RedirectToAction("Login");
+
+
+            //if name is taken redirect to the create account page so they can try again
+            // return RedirectToAction("CreateAccount");
+
+
+
+
+        }
+
         public IActionResult Login()
         {
 
             return View();
         }
+
 
         public IActionResult LoginValidate(string username, string password)
         {
