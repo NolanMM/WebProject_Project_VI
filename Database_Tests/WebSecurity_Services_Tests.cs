@@ -67,25 +67,33 @@ namespace Database_Tests
         }
 
         [TestMethod]
-        public void IsAuthenticated_WhenLoggedIn_ReturnsTrue()
+         public async Task IsAuthenticated_WhenLoggedIn_ReturnsTrue()
         {
-            _webSecurityServices.LoginAsync("validUser", "validPassword").Wait(); // Simulate a successful login
+            await _webSecurityServices.LoginAsync("validUser", "validPassword"); // Ensure this is awaited
+
+            // Diagnostic line: check if AccountSecured is true
+            Assert.IsTrue(_webSecurityServices.AccountSecured, "Account should be secured after login.");
 
             bool isAuthenticated = _webSecurityServices.IsAuthenticated();
 
-            Assert.IsTrue(isAuthenticated);
+            Assert.IsTrue(isAuthenticated, "IsAuthenticated should return true after successful login.");
         }
 
+
         [TestMethod]
-        public void GetUserName_WhenLoggedIn_ReturnsUserName()
+        public async Task GetUserName_WhenLoggedIn_ReturnsUserName()
         {
             string expectedUserName = "validUser";
-            _webSecurityServices.LoginAsync(expectedUserName, "validPassword").Wait(); // Simulate a successful login
+            await _webSecurityServices.LoginAsync(expectedUserName, "validPassword"); // Await the login
 
             string? userName = _webSecurityServices.GetUserName();
 
+            // Diagnostic lines: check if these properties are set as expected
+            Assert.IsTrue(_webSecurityServices.AccountSecured, "AccountSecured should be true after login.");
+            Assert.IsNotNull(userName, "UserName should not be null after successful login.");
             Assert.AreEqual(expectedUserName, userName);
         }
+
 
         [TestMethod]
         public void GetUserName_WhenNotLoggedIn_ReturnsNull()
