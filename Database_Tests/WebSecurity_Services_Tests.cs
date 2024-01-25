@@ -1,0 +1,100 @@
+﻿using Xunit; 
+using Moq; 
+using Microsoft.Extensions.Configuration; 
+using System.Threading.Tasks; 
+using WebProject_Project_VI.Models; 
+using WebProject_Project_VI.Services; 
+using WebProject_Project_VI.Services.Table_Services; 
+
+namespace Database_Tests
+{
+    public class WebSecurityServicesTests
+    {
+        private readonly Mock<IConfiguration> _mockConfiguration;
+        private readonly Mock<Account_Table_Services> _mockAccountTableServices;
+        private readonly WebSecurityServices _webSecurityServices;
+
+        public WebSecurityServicesTests()
+        {
+            _mockConfiguration = new Mock<IConfiguration>();
+            _mockAccountTableServices = new Mock<Account_Table_Services>();
+            _webSecurityServices = new WebSecurityServices(); 
+        }
+
+        [Fact]
+        public void GetUniqueKey_ShouldReturnStringOfGivenSize()
+        {
+            var key = WebSecurityServices.GetUniqueKey(10);
+            Assert.AreEqual(10, key.Length);
+        }
+
+        [Fact]
+        public async Task LoginAsync_ValidCredentials_ShouldReturnTrue()
+        {
+            var username = "validUser";
+            var password = "validPassword";
+            var mockAccount = new Account_Model { Username = username, Password = password };
+
+            _mockAccountTableServices.Setup(s => s.Read_Account_Data_By_Username_Async(It.IsAny<string>()))
+                .ReturnsAsync(mockAccount);
+
+            var result = await _webSecurityServices.LoginAsync(username, password);
+
+            Assert.IsTrue(result);
+        }
+
+        [Fact]
+        public async Task LoginAsync_InvalidCredentials_ShouldReturnFalse()
+        {
+            var username = "invalidUser";
+            var password = "invalidPassword";
+
+            _mockAccountTableServices.Setup(s => s.Read_Account_Data_By_Username_Async(It.IsAny<string>()))
+                .ReturnsAsync((Account_Model)null);
+
+            var result = await _webSecurityServices.LoginAsync(username, password);
+
+            Assert.IsFalse(result);
+        }
+
+        [Fact]
+        public void Logout_ShouldSetAccountSecuredToFalse()
+        {
+            _webSecurityServices.Logout();
+
+            Assert.IsFalse(_webSecurityServices.AccountSecured);
+        }
+
+        [Fact]
+        public void IsAuthenticated_WhenLoggedIn_ReturnsTrue()
+        {
+
+            _webSecurityServices.LoginAsync("validUser", "validPassword").Wait(); // Simulate a successful login
+
+            bool isAuthenticated = _webSecurityServices.IsAuthenticated();
+
+            Assert.IsTrue(isAuthenticated);
+        }
+
+        [Fact]
+        public void GetUserName_WhenLoggedIn_ReturnsUserName()
+        {
+            string expectedUserName = "validUser";
+            _webSecurityServices.LoginAsync(expectedUserName, "validPassword").Wait(); // Simulate a successful login
+
+            string? userName = _webSecurityServices.GetUserName();
+
+            Assert.AreEqual(expectedUserName, userName);
+        }
+
+        [Fact]
+        public void GetUserName_WhenNotLoggedIn_ReturnsNull()
+        {
+            string? userName = _webSecurityServices.GetUserName();
+
+            Assert.IsNull(userName);
+        }
+    }
+
+
+}
