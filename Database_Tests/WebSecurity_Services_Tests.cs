@@ -1,13 +1,14 @@
-﻿using Xunit; 
-using Moq; 
-using Microsoft.Extensions.Configuration; 
-using System.Threading.Tasks; 
-using WebProject_Project_VI.Models; 
-using WebProject_Project_VI.Services; 
-using WebProject_Project_VI.Services.Table_Services; 
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
+using WebProject_Project_VI.Models;
+using WebProject_Project_VI.Services;
+using WebProject_Project_VI.Services.Table_Services;
 
 namespace Database_Tests
 {
+    [TestClass]
     public class WebSecurityServicesTests
     {
         private readonly Mock<IConfiguration> _mockConfiguration;
@@ -18,17 +19,17 @@ namespace Database_Tests
         {
             _mockConfiguration = new Mock<IConfiguration>();
             _mockAccountTableServices = new Mock<Account_Table_Services>();
-            _webSecurityServices = new WebSecurityServices(); 
+            _webSecurityServices = new WebSecurityServices();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetUniqueKey_ShouldReturnStringOfGivenSize()
         {
             var key = WebSecurityServices.GetUniqueKey(10);
             Assert.AreEqual(10, key.Length);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task LoginAsync_ValidCredentials_ShouldReturnTrue()
         {
             var username = "validUser";
@@ -43,7 +44,7 @@ namespace Database_Tests
             Assert.IsTrue(result);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task LoginAsync_InvalidCredentials_ShouldReturnFalse()
         {
             var username = "invalidUser";
@@ -57,7 +58,7 @@ namespace Database_Tests
             Assert.IsFalse(result);
         }
 
-        [Fact]
+        [TestMethod]
         public void Logout_ShouldSetAccountSecuredToFalse()
         {
             _webSecurityServices.Logout();
@@ -65,10 +66,9 @@ namespace Database_Tests
             Assert.IsFalse(_webSecurityServices.AccountSecured);
         }
 
-        [Fact]
+        [TestMethod]
         public void IsAuthenticated_WhenLoggedIn_ReturnsTrue()
         {
-
             _webSecurityServices.LoginAsync("validUser", "validPassword").Wait(); // Simulate a successful login
 
             bool isAuthenticated = _webSecurityServices.IsAuthenticated();
@@ -76,7 +76,7 @@ namespace Database_Tests
             Assert.IsTrue(isAuthenticated);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetUserName_WhenLoggedIn_ReturnsUserName()
         {
             string expectedUserName = "validUser";
@@ -87,7 +87,7 @@ namespace Database_Tests
             Assert.AreEqual(expectedUserName, userName);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetUserName_WhenNotLoggedIn_ReturnsNull()
         {
             string? userName = _webSecurityServices.GetUserName();
@@ -95,6 +95,4 @@ namespace Database_Tests
             Assert.IsNull(userName);
         }
     }
-
-
 }
