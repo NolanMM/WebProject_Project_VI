@@ -137,6 +137,7 @@ namespace WebProject_Project_VI.Services
             }
             
         }
+
         public async Task<bool?> Delete_All_Data_By_Table_Name_Async(string? table_name, string? username_account_authorized, string? password_account_authorized)
         {
             IConfiguration configuration = new ConfigurationBuilder()
