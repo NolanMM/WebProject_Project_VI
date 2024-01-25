@@ -42,7 +42,7 @@ namespace WebProject_Project_VI.Controllers
             List<IData>? posts__ = await database_Services.Read_All_Data_By_Table_Name_Async(table_name, Username_Authorized, Password_Authorized);
             List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post);
 
-            if(posts == null)
+            if (posts == null)
             {
                 posts = new List<Post_Model>();
             }
@@ -79,7 +79,7 @@ namespace WebProject_Project_VI.Controllers
             return View(filteredPosts);
         }
 
-    public async Task<IActionResult> IncrementViews(int postId)
+        public async Task<IActionResult> IncrementViews(int postId)
         {
             // Find the post in the list based on the postId
             var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
@@ -92,7 +92,7 @@ namespace WebProject_Project_VI.Controllers
                 // Increment the view count for the specified post
                 postToUpdate.Number_Of_Visits++;
                 bool isUpdated = await database_Services.Update_Property_Data_Post_Data_By_Post_ID_And_Property_Async(postToUpdate.PostId, "Number_Of_Visits", postToUpdate.Number_Of_Visits.ToString(), "int");
-                if(isUpdated)
+                if (isUpdated)
                 {
                     return Json(new { success = true, viewsCount = postToUpdate.Number_Of_Visits });
                 }
@@ -121,7 +121,7 @@ namespace WebProject_Project_VI.Controllers
                 // Increment the like count for the specified post
                 postToUpdate.Number_Of_Likes++;
                 bool isUpdated = await database_Services.Update_Property_Data_Post_Data_By_Post_ID_And_Property_Async(postToUpdate.PostId, "Number_Of_Likes", postToUpdate.Number_Of_Likes.ToString(), "int");
-                if(isUpdated)
+                if (isUpdated)
                 {
                     return Json(new { success = true, likesCount = postToUpdate.Number_Of_Likes });
                 }
@@ -162,18 +162,18 @@ namespace WebProject_Project_VI.Controllers
         public async Task<IActionResult> DeletePost(int postId)
         {
             // Lambda expression to find the post to delete
-			var postToDelete = posts.FirstOrDefault(p => p.PostId == postId);
+            var postToDelete = posts.FirstOrDefault(p => p.PostId == postId);
 
             Database_Services database_Services = new Database_Services();
             database_Services.Set_Up_Database_Services(_logger, SessionID);
 
             // If the post is found -> then delete
             if (postToDelete != null)
-			{
+            {
                 bool isDeleted = await database_Services.Delete_Post_By_Title_Async(postToDelete.Title);
-				posts.Remove(postToDelete);
-                if(isDeleted)
-                return Json(new { success = true });
+                posts.Remove(postToDelete);
+                if (isDeleted)
+                    return Json(new { success = true });
                 else
                 {
                     return Json(new { success = false, error = "Error deleting the post" });
@@ -181,12 +181,12 @@ namespace WebProject_Project_VI.Controllers
             }
 
             // Return error if can't delete the post.
-			return Json(new { success = false, error = "Error deleting the post" });
-		}
+            return Json(new { success = false, error = "Error deleting the post" });
+        }
 
         public async Task<IActionResult> CreatePost(string authorName, string title, string content)
         {
-            if(posts == null)
+            if (posts == null)
             {
                 posts = new List<Post_Model>();
             }
@@ -256,7 +256,7 @@ namespace WebProject_Project_VI.Controllers
             return View("EditPost", new Post { PostId = postId, PostTitle = postToUpdate.Title, Content = content });
         }
 
-        public async Task<IActionResult> FetchPost(int postId, string authorName,  string content, string title, int likecount, int dislikecount, int viewcount, string date)
+        public async Task<IActionResult> FetchPost(int postId, string authorName, string content, string title, int likecount, int dislikecount, int viewcount, string date)
         {
             if (posts == null)
             {
@@ -277,7 +277,7 @@ namespace WebProject_Project_VI.Controllers
             List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post);
 
             // check increment with postID
-            if (postId <= IdIncrement )
+            if (postId <= IdIncrement)
             {
                 postId = IdIncrement++;
             }
@@ -312,9 +312,35 @@ namespace WebProject_Project_VI.Controllers
             }
             else
             {
-            // Redirect to the login page
-            return RedirectToAction("Login");
+                // Redirect to the login page
+                return RedirectToAction("Login");
             }
+        }
+
+
+        public IActionResult CreateAccount()
+        {
+
+            return View();
+        }
+
+        public IActionResult CreateAccountValidate(string username, string authorname, string password)
+        {
+
+
+            // check to see if the account already exists or if the author name is already taken
+
+            // if name not taken send the account info to the database
+            // Redirect to the login after account is created
+            return RedirectToAction("Login");
+
+
+            //if name is taken redirect to the create account page so they can try again
+            // return RedirectToAction("CreateAccount");
+
+
+
+
         }
 
         public IActionResult Login()
