@@ -89,23 +89,20 @@ namespace WebProject_Project_VI.Services
                 {
                     if (password == Pass)
                     {
-                        //save the account name as a viewbag / session file for use else where
                         UserName = username;
 
-                        //change AccountSecured to true
                         AccountSecured = true;
 
-                        // Redirect to the index or wherever you want to go after the form submission
                         return true;
                     }
-                    else   //if not Redirect them to try again
+                    else
                     {
-                        // Redirect to theLogin or wherever you want to go after login fail
+                        // Login fail
                         return false;
                     }
                 }
 
-                // Redirect to theLogin or wherever you want to go after login fail
+                // Login fail
                 return false;
             }
             else
