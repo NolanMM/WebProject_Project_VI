@@ -419,5 +419,41 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             Assert.IsTrue(result);
             Assert.AreEqual(DateTime.Parse(newValue), result_read.Date);
         }
+
+        [TestMethod]
+        public async Task Update_Post_Data_By_Post_Model_Async_Should_Update_Data()
+        {
+            // Arrange
+            string session_id = "test_session_id_Read_All_Data_Async";
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+            Post_Table_Services post_services = new Post_Table_Services();
+            post_services.Set_Up_Post_Table_Services(session_id, configuration);
+
+            var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(29, "SampleTitleBoolean", "ContentTestUpdate", "AuthorTestUpdate", false);
+
+            var postIdToUpdate = 29;
+            var newPostData = new Post_Model
+            {
+                PostId = postIdToUpdate,
+                Title = "Updated Title",
+                Content = "Updated Content",
+                Number_Of_Likes = 10,
+                Number_Of_DisLikes = 5,
+                Is_Public = true,
+                Number_Of_Visits = 20,
+                Date = DateTime.Now
+            };
+
+            // Act
+            bool result = await post_services.Update_Post_Data_By_Post_Model_Async(newPostData);
+            Post_Model? result_read = await post_services.Read_Post_Data_By_Post_ID_Async(postIdToUpdate);
+            bool result_delete = await post_services.Delete_Post_By_Post_ID_Async(postIdToUpdate);
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(newPostData.Title, result_read.Title);
+            Assert.AreEqual(newPostData.Content, result_read.Content);
+        }
     }
 }

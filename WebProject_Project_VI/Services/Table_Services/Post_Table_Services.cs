@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using MySqlConnector;
+using System.Reflection.PortableExecutable;
 using WebProject_Project_VI.Models;
 
 namespace WebProject_Project_VI.Services.Table_Services
@@ -58,6 +59,43 @@ namespace WebProject_Project_VI.Services.Table_Services
                 return null;
             }
         }
+        public async Task<int> Get_Currently_Greatest_Post_ID_In_Post_Table_Async()
+        {
+            if (connection_string == null)
+            {
+                return -1;
+            }
+
+            try
+            {
+                using MySqlConnection connection = new MySqlConnection(connection_string);
+                await connection.OpenAsync();
+
+                string sql = $"SELECT MAX(`PostId`) FROM {schema}.{table_name};";
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                {
+                    using (MySqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            int greatestPostId = reader.GetInt32(0);
+                            return greatestPostId;
+                        }
+                        else
+                        {
+                            return -1;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return -1;
+            }
+        }
+
         public async Task<List<IData>?> Read_All_Data_Async(string? username_Authorized, string? password_Authorized)
         {
 
@@ -357,7 +395,7 @@ namespace WebProject_Project_VI.Services.Table_Services
             }
         }
 
-        public async Task<Post_Model?> Read_Post_Data_By_Post_ID_Async(string? Post_Id)
+        public async Task<Post_Model?> Read_Post_Data_By_Post_ID_Async(int? Post_Id)
         {
             if (connection_string == null)
             {
@@ -372,7 +410,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                 using MySqlConnection connection = new MySqlConnection(connection_string);
                 await connection.OpenAsync();
 
-                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `PostId` = \"" + Post_Id + "\";";
+                string sql = $"SELECT * FROM {schema}.{table_name} WHERE `PostId` = " + Post_Id + ";";
 
                 using (MySqlCommand cmd = new MySqlCommand(sql, connection))
                 {
@@ -456,8 +494,55 @@ namespace WebProject_Project_VI.Services.Table_Services
                 return null;
             }
         }
+        public async Task<bool> Update_Post_Data_By_Post_Model_Async(Post_Model new_data)
+        {
+            if (connection_string == null || new_data == null)
+            {
+                return false;
+            }
 
-        public async Task<bool> Update_Post_Data_String_By_Title_Async(int? Post_ID,string? title, string? propertyUpdated, string? newValue, Type property_Type)
+            try
+            {
+                using MySqlConnection connection = new MySqlConnection(connection_string);
+                await connection.OpenAsync();
+
+                string sql = $"UPDATE {schema}.{table_name} " +
+                             "SET `Title` = @Title, " +
+                             "`Content` = @Content, " +
+                             "`Number_Of_Likes` = @Number_Of_Likes, " +
+                             "`Number_Of_DisLikes` = @Number_Of_DisLikes, " +
+                             "`Is_Public` = @Is_Public, " +
+                             "`Number_Of_Visits` = @Number_Of_Visits, " +
+                             "`Date` = @Date " +
+                             "WHERE `PostId` = @PostId;";
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                {
+                    cmd.Parameters.AddWithValue("@Title", new_data.Title);
+                    cmd.Parameters.AddWithValue("@Content", new_data.Content);
+                    cmd.Parameters.AddWithValue("@Number_Of_Likes", new_data.Number_Of_Likes);
+                    cmd.Parameters.AddWithValue("@Number_Of_DisLikes", new_data.Number_Of_DisLikes);
+                    cmd.Parameters.AddWithValue("@Is_Public", new_data.Is_Public);
+                    cmd.Parameters.AddWithValue("@Number_Of_Visits", new_data.Number_Of_Visits);
+                    cmd.Parameters.AddWithValue("@Date", new_data.Date);
+                    cmd.Parameters.AddWithValue("@PostId", new_data.PostId);
+
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                    await connection.CloseAsync();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+
+
+        public async Task<bool> Update_Post_Data_String_By_Title_Async(int? Post_ID,string? title, string? propertyUpdated, string? newValue, string? property_Type)
         {
             if(title != null && Post_ID != null)
             {
@@ -482,7 +567,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                 By_Property_Values = Post_ID.ToString();
                 By_Property = "PostId";
                 sql_first = $"UPDATE {schema}.{table_name} SET `{propertyUpdated}` =";
-                sql_tails = "WHERE `" + By_Property + "` = \"" + By_Property_Values + "\";";
+                sql_tails = "WHERE `" + By_Property + "` = " + By_Property_Values + ";";
             }
             if (title != null)
             {
@@ -492,7 +577,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                 sql_tails = "WHERE `" + By_Property + "` = \"" + By_Property_Values + "\";";
             }
             // Cast the newValue to the property_Type
-            if (property_Type == typeof(string))
+            if (property_Type == "string")
             {
                 try
                 {
@@ -517,7 +602,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                     return false;
                 }
             }
-            else if(property_Type == typeof(int))
+            else if(property_Type == "int")
             {
                 try
                 {
@@ -541,7 +626,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                     return false;
                 }
             }
-            else if(property_Type == typeof(bool))
+            else if(property_Type == "bool")
             {
                 try
                 {
@@ -566,7 +651,7 @@ namespace WebProject_Project_VI.Services.Table_Services
                     return false;
                 }
             }
-            else if(property_Type == typeof(DateTime))
+            else if(property_Type == "DateTime")
             {
                 try
                 {

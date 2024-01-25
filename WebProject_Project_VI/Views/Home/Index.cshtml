@@ -1,4 +1,4 @@
-﻿@model List<Post>
+﻿@model List<Post_Model>
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -37,14 +37,14 @@
             <div class="header-content">
                 <div class="left-content">
                     <!-- Put the Authors Name, Post Title and Date of Publication in accordian header -->
-                    @($"{post.AuthorName} - {post.PostTitle} - {post.DateTime}")
+                    @($"{post.Author} - {post.Title} - {post.Date}")
                 </div>
                 <div class="right-content">
                     <!-- Put the Likes, Dislike and Views icons and number in accordian header -->
-                    <span class="thumbs-up" onclick="incrementLikes('@post.PostId')"><i class="fa fa-thumbs-up"></i> <span id="likes@post.PostId">@post.LikeCount</span></span>
-                    <span class="thumbs-down" onclick="incrementDislikes('@post.PostId')"><i class="fa fa-thumbs-down"></i> <span id="dislikes@post.PostId">@post.DislikeCount</span></span>
-                    <span class="views" onclick="incrementViews('@post.PostId')"><i class="fa fa-eye"></i> <span id="views@post.PostId">@post.ViewCount</span></span>
-                    @if (post.AuthorName == ViewBag.UserName) 
+                    <span class="thumbs-up" onclick="incrementLikes('@post.PostId')"><i class="fa fa-thumbs-up"></i> <span id="likes@post.PostId">@post.Number_Of_Likes</span></span>
+                    <span class="thumbs-down" onclick="incrementDislikes('@post.PostId')"><i class="fa fa-thumbs-down"></i> <span id="dislikes@post.PostId">@post.Number_Of_DisLikes</span></span>
+                    <span class="views" onclick="incrementViews('@post.PostId')"><i class="fa fa-eye"></i> <span id="views@post.PostId">@post.Number_Of_Visits</span></span>
+                    @if (post.Author == ViewBag.UserName) 
                     {
                         <span class="edit" onclick="editPost('@post.PostId')"><i class="fa fa-pencil"></i> </span>
                         <span class="delete" onclick="deletePost('@post.PostId')"><i class="fa fa-trash"></i> </span>
@@ -59,80 +59,77 @@
    </div>
 }
 <script>
-    function incrementLikes(postId) {
-        // Make an AJAX call to the IncrementLikes action in HomeController
-        $.ajax({
-            url: '@Url.Action("IncrementLikes", "Home")',
-            type: 'POST',
-            data: { postId: postId },
-            success: function (result) {
-                // Update the like count on the UI
-                $('#likes' + postId).text(result.likesCount);
-            },
-            error: function () {
-                console.error('Failed to increment likes.');
-            }
-        });
+    async function incrementLikes(postId) {
+        try {
+            const result = await $.ajax({
+                url: '@Url.Action("IncrementLikes", "Home")',
+                type: 'POST',
+                data: { postId: postId },
+            });
+
+            // Update the like count on the UI
+            $('#likes' + postId).text(result.Number_Of_Likes);
+        } catch (error) {
+            console.error('Failed to increment likes.', error);
+        }
     }
 
-    function incrementDislikes(postId) {
-        // Make an AJAX call to the IncrementDislikes action in HomeController
-        $.ajax({
-            url: '@Url.Action("IncrementDislikes", "Home")',
-            type: 'POST',
-            data: { postId: postId },
-            success: function (result) {
-                // Update the dislikelike count on the UI
-                $('#dislikes' + postId).text(result.dislikesCount);
-            },
-            error: function () {
-                console.error('Failed to increment dislikes.');
-            }
-        });
+    async function incrementDislikes(postId) {
+        try {
+            const result = await $.ajax({
+                url: '@Url.Action("IncrementDislikes", "Home")',
+                type: 'POST',
+                data: { postId: postId },
+            });
+
+            // Update the dislike count on the UI
+            $('#dislikes' + postId).text(result.Number_Of_DisLikes);
+        } catch (error) {
+            console.error('Failed to increment dislikes.', error);
+        }
     }
 
-    function incrementViews(postId) {
-        // Make an AJAX call to the IncrementViews action in HomeController
-        $.ajax({
-            url: '@Url.Action("IncrementViews", "Home")',
-            type: 'POST',
-            data: { postId: postId },
-            success: function (result) {
-                // Update the view count on the UI
-                $('#views' + postId).text(result.viewsCount);
-            },
-            error: function () {
-                console.error('Failed to increment views.');
-            }
-        });
+    async function incrementViews(postId) {
+        try {
+            const result = await $.ajax({
+                url: '@Url.Action("IncrementViews", "Home")',
+                type: 'POST',
+                data: { postId: postId },
+            });
+
+            // Update the view count on the UI
+            $('#views' + postId).text(result.Number_Of_Visits);
+        } catch (error) {
+            console.error('Failed to increment views.', error);
+        }
     }
 
-    function deletePost(postId) {
-        $.ajax({
-            url: '@Url.Action("DeletePost", "Home")',
-            type: 'DELETE',
-            data: { postId: postId },
-            success: function (result) {
-                if (result.success) {
-                    // Reload the page if removed successfully 
-                    location.reload();
-                } else {
-                    alert('Error deleting the post.');
-                }
-            },
-            error: function () {
-                console.error('Failed to delete post.');
+    async function deletePost(postId) {
+        try {
+            const result = await $.ajax({
+                url: '@Url.Action("DeletePost", "Home")',
+                type: 'DELETE',
+                data: { postId: postId },
+            });
+
+            if (result.success) {
+                // Reload the page if removed successfully
+                location.reload();
+            } else {
+                alert('Error deleting the post.');
             }
-        });
+        } catch (error) {
+            console.error('Failed to delete post.', error);
+        }
     }
 
     function editPost(postId) {
         window.location.href = '@Url.Action("EditPost", "Home")' + '?postId=' + postId;
     }
 
-    function handleClick(postId) {
-        toggleAccordion(postId);
-        incrementViews(postId);
+    async function handleClick(postId) {
+        await toggleAccordion(postId);
+        await incrementViews(postId);
     }
 </script>
 
