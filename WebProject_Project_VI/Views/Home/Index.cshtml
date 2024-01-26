@@ -11,18 +11,16 @@
 <div class="text-center">
     <h1 class="display-4">Welcome To The Site</h1>
 
-
-    <!-- Add the "New Post" button here -->
-    <a asp-action="NewPost" class="dropbtn">New Post</a>
-
     @if (!ViewBag.IsLoggedIn)
     {
         <a asp-action="Login" class="dropbtn">Login</a>
-    <!-- Add the "Create Account" button here -->
+        <!-- Add the "Create Account" button here -->
         <a asp-action="CreateAccount" class="dropbtn">Create Account</a>
     }
     else
     {
+        <!-- Add the "New Post" button here -->
+        <a asp-action="NewPost" class="dropbtn">New Post</a>
         <a asp-action="Logout" class="dropbtn">Logout</a>
     }
 
