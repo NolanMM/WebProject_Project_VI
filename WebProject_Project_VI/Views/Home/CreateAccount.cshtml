@@ -1,0 +1,23 @@
+﻿@page
+@model WebProject_Project_VI.Views.Home.CreateAccountModel
+@{
+}
+
+<div>
+    <h1>Create account!</h1>
+
+        <form asp-action="CreateAccountValidate" method="post">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" value=""><br>
+            <label for="authorname">Authorname:</label><br>
+            <input type="text" id="authorname" name="authorname" value=""><br>
+            <label for="password">Password:</label><br>
+            <input type="text" id="password" name="password" value=""><br><br>
+            @if(!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+            <b><p style="color: red;">@ViewBag.ErrorMessage</p></b>
+            }
+            <input type="submit" value="Submit">
+        </form>
+
+ </div>

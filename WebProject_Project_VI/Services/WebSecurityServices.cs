@@ -115,9 +115,13 @@ namespace WebProject_Project_VI.Services
 
         public bool Logout()
         {
-            // change AccountSecured to false
+            UserName = null;
             AccountSecured = false;
-            return AccountSecured;
+            if (AccountSecured == false)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

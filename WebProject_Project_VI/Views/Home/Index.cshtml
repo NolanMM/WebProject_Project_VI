@@ -15,6 +15,17 @@
     <!-- Add the "New Post" button here -->
     <a asp-action="NewPost" class="dropbtn">New Post</a>
 
+    @if (!ViewBag.IsLoggedIn)
+    {
+        <a asp-action="Login" class="dropbtn">Login</a>
+    <!-- Add the "Create Account" button here -->
+        <a asp-action="CreateAccount" class="dropbtn">Create Account</a>
+    }
+    else
+    {
+        <a asp-action="Logout" class="dropbtn">Logout</a>
+    }
+
     <!-- Dropdown for selecting filter option -->
     <div class="dropdown">
         <button class="dropbtn">Filter</button>
@@ -30,6 +41,7 @@
 
 <!-- Loop through the list of posts -->
 @foreach (var post in Model)
+
 {
     <!-- Create an accordian item -->
     <div class="accordion-item">

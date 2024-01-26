@@ -10,8 +10,19 @@
             <label for="username">Username:</label><br>
             <input type="text" id="username" name="username" value=""><br>
             <label for="password">Password:</label><br>
-            <input type="text" id="password" name="password" value=""><br><br>
+            <input type="text" id="password" name="password" value=""><br>
+            @if(!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <b><p style="color: red;">@ViewBag.ErrorMessage</p></b>
+            }
+            <br>
             <input type="submit" value="Submit">
         </form>
+    <br />
+    <br />
+    <h3>Don't have an account yet? Create one now by clicking the button below!</h3>
+    <!-- Add the "Create Account" button here -->
+    <br />
+    <a asp-action="CreateAccount" class="dropbtn">Create Account</a>
 
  </div>
