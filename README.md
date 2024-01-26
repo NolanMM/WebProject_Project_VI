@@ -95,6 +95,7 @@ _The Instruction for installing and set up the project locally._
   * [ ] France
   
 </br>
+
 <!-- LICENSE -->
 ## License
 

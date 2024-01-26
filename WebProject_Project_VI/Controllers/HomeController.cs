@@ -74,6 +74,7 @@ namespace WebProject_Project_VI.Controllers
             }
 
             ViewData["Filter"] = filter; // Pass the selected filter to the view
+            ViewBag.IsLoggedIn = AccountSecured;
             return View(filteredPosts);
         }
 
@@ -412,6 +413,18 @@ namespace WebProject_Project_VI.Controllers
                 ViewBag.ErrorMessage = "Login failed. Please check your username and password.";
                 return View("Login");
             }
+        }
+
+
+        public IActionResult Logout()
+        {
+            if (AccountSecured == true)
+            {
+                AccountSecured = false;
+                UserName = String.Empty;
+                return RedirectToAction("Index", new { filter = "date" });
+            }
+            return RedirectToAction("Index", new { filter = "date" });
         }
 
         public IActionResult Privacy()
