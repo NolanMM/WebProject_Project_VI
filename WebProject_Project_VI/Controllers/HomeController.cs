@@ -361,7 +361,7 @@ namespace WebProject_Project_VI.Controllers
             {
                 AccountSecured = false;
                 ViewBag.ErrorMessage = "Account creation failed.Your Account already be Created!";
-                if(_logger != null)
+                if (_logger != null)
                     _logger.LogInformation("Account creation failed.Duplicated username");
                 return View("CreateAccount");
             }
@@ -371,7 +371,7 @@ namespace WebProject_Project_VI.Controllers
 
         public IActionResult Login()
         {
-            if(AccountSecured == true)
+            if (AccountSecured == true)
             {
                 return RedirectToAction("Index", new { filter = "date" });
             }
