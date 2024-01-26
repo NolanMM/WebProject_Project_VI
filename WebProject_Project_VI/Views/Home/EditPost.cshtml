@@ -1,11 +1,11 @@
-﻿@model WebProject_Project_VI.Post
+﻿@model WebProject_Project_VI.Models.Post_Model
 
 <div>
     <h1>Edit Post</h1>
 
     <form asp-action="UpdatePost" method="post">
         <input type="hidden" name="PostId" value="@Model.PostId" />
-        <p>Title: @Model.PostTitle</p>
+        <p>Title: @Model.Title</p>
         <label for="content">Content:</label><br>
         <input type="text" id="content" name="content" value="@Model.Content"><br><br>
         <input type="submit" value="Update">

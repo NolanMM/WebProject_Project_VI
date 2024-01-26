@@ -1,3 +1,5 @@
+using WebProject_Project_VI.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +10,8 @@ builder.Services.AddLogging(builder =>
     builder.AddConsole();
     builder.AddDebug();
 });
+builder.Services.AddScoped<IWebSecurityServices, WebSecurityServices>();
+builder.Services.AddScoped<Database_Services, Database_Services>();
 
 var app = builder.Build();
 

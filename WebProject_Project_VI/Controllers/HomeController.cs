@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Security.Cryptography;
+using System.Text;
 using WebProject_Project_VI.Models;
 using WebProject_Project_VI.Services;
 using WebProject_Project_VI.Services.Table_Services;
@@ -22,34 +24,54 @@ namespace WebProject_Project_VI.Controllers
 
         private static string? UserName = String.Empty;
 
-        private static List<Post> posts = new List<Post>();
+        private static string SessionID = String.Empty;
+
+        private static List<Post_Model>? posts;
 
         private static int IdIncrement;
 
-        public IActionResult Index(string filter)
+        public async Task<IActionResult> Index(string filter)
         {
-            List<Post> filteredPosts;
+            string _SessionID = GetUniqueKey(10);
+            SessionID = _SessionID;
+            string table_name = "post";
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
+            string Username_Authorized = "historyfellow@Post";
+            string Password_Authorized = "HistoryFellow@Password";
+            List<IData>? posts__ = await database_Services.Read_All_Data_By_Table_Name_Async(table_name, Username_Authorized, Password_Authorized);
+            List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post);
 
+            if(posts == null)
+            {
+                posts = new List<Post_Model>();
+            }
+            else
+            {
+                posts.Clear();
+                posts = new List<Post_Model>();
+            }
             ViewBag.UserName = UserName;
+            posts = filteredPosts;
 
             // Apply filtering based on the selected option
             switch (filter)
             {
                 case "date":
-                    filteredPosts = posts.OrderBy(p => p.DateTime).ToList();
+                    filteredPosts = posts.OrderBy(p => p.Date).ToList();
                     break;
                 case "views":
-                    filteredPosts = posts.OrderByDescending(p => p.ViewCount).ToList();
+                    filteredPosts = posts.OrderByDescending(p => p.Number_Of_Visits).ToList();
                     break;
                 case "likes":
-                    filteredPosts = posts.OrderByDescending(p => p.LikeCount).ToList();
+                    filteredPosts = posts.OrderByDescending(p => p.Number_Of_Likes).ToList();
                     break;
                 case "dislikes":
-                    filteredPosts = posts.OrderByDescending(p => p.DislikeCount).ToList();
+                    filteredPosts = posts.OrderByDescending(p => p.Number_Of_DisLikes).ToList();
                     break;
                 default:
                     // Default sorting by date
-                    filteredPosts = posts.OrderBy(p => p.DateTime).ToList();
+                    filteredPosts = posts.OrderBy(p => p.Date).ToList();
                     break;
             }
 
@@ -57,16 +79,27 @@ namespace WebProject_Project_VI.Controllers
             return View(filteredPosts);
         }
 
-    public IActionResult IncrementViews(int postId)
+    public async Task<IActionResult> IncrementViews(int postId)
         {
             // Find the post in the list based on the postId
             var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
+
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
 
             if (postToUpdate != null)
             {
                 // Increment the view count for the specified post
-                postToUpdate.ViewCount++;
-                return Json(new { success = true, viewsCount = postToUpdate.ViewCount });
+                postToUpdate.Number_Of_Visits++;
+                bool isUpdated = await database_Services.Update_Property_Data_Post_Data_By_Post_ID_And_Property_Async(postToUpdate.PostId, "Number_Of_Visits", postToUpdate.Number_Of_Visits.ToString(), "int");
+                if(isUpdated)
+                {
+                    return Json(new { success = true, viewsCount = postToUpdate.Number_Of_Visits });
+                }
+                else
+                {
+                    return Json(new { success = false, error = "Error updating the post" });
+                }
             }
             else
             {
@@ -75,16 +108,27 @@ namespace WebProject_Project_VI.Controllers
             }
         }
 
-        public IActionResult IncrementLikes(int postId)
+        public async Task<IActionResult> IncrementLikes(int postId)
         {
             // Find the post in the list based on the postId
             var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
 
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
+
             if (postToUpdate != null)
             {
                 // Increment the like count for the specified post
-                postToUpdate.LikeCount++;
-                return Json(new { success = true, likesCount = postToUpdate.LikeCount });
+                postToUpdate.Number_Of_Likes++;
+                bool isUpdated = await database_Services.Update_Property_Data_Post_Data_By_Post_ID_And_Property_Async(postToUpdate.PostId, "Number_Of_Likes", postToUpdate.Number_Of_Likes.ToString(), "int");
+                if(isUpdated)
+                {
+                    return Json(new { success = true, likesCount = postToUpdate.Number_Of_Likes });
+                }
+                else
+                {
+                    return Json(new { success = false, error = "Error updating the post" });
+                }
             }
             else
             {
@@ -93,16 +137,20 @@ namespace WebProject_Project_VI.Controllers
             }
         }
 
-        public IActionResult IncrementDislikes(int postId)
+        public async Task<IActionResult> IncrementDislikes(int postId)
         {
             // Find the post in the list based on the postId
             var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
 
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
+
             if (postToUpdate != null)
             {
                 // Increment the like count for the specified post
-                postToUpdate.DislikeCount++;
-                return Json(new { success = true, dislikesCount = postToUpdate.DislikeCount });
+                postToUpdate.Number_Of_DisLikes++;
+                bool isUpdated = await database_Services.Update_Property_Data_Post_Data_By_Post_ID_And_Property_Async(postToUpdate.PostId, "Number_Of_DisLikes", postToUpdate.Number_Of_DisLikes.ToString(), "int");
+                return Json(new { success = true, dislikesCount = postToUpdate.Number_Of_DisLikes });
             }
             else
             {
@@ -111,45 +159,76 @@ namespace WebProject_Project_VI.Controllers
             }
         }
 
-        public IActionResult DeletePost(int postId)
+        public async Task<IActionResult> DeletePost(int postId)
         {
             // Lambda expression to find the post to delete
 			var postToDelete = posts.FirstOrDefault(p => p.PostId == postId);
 
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
+
             // If the post is found -> then delete
-			if (postToDelete != null)
+            if (postToDelete != null)
 			{
+                bool isDeleted = await database_Services.Delete_Post_By_Title_Async(postToDelete.Title);
 				posts.Remove(postToDelete);
+                if(isDeleted)
                 return Json(new { success = true });
+                else
+                {
+                    return Json(new { success = false, error = "Error deleting the post" });
+                }
             }
 
             // Return error if can't delete the post.
 			return Json(new { success = false, error = "Error deleting the post" });
 		}
 
-        public IActionResult CreatePost(string authorName, string title, string content)
+        public async Task<IActionResult> CreatePost(string authorName, string title, string content)
         {
+            if(posts == null)
+            {
+                posts = new List<Post_Model>();
+            }
+            else
+            {
+                posts.Clear();
+                posts = new List<Post_Model>();
+            }
+            string table_name = "post";
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
+            string Username_Authorized = "historyfellow@Post";
+            string Password_Authorized = "HistoryFellow@Password";
+            // Act
+            List<IData>? posts__ = await database_Services.Read_All_Data_By_Table_Name_Async(table_name, Username_Authorized, Password_Authorized);
+            List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post);
 
-                IdIncrement++;
-                authorName = UserName;
+            IdIncrement = filteredPosts.Count();
+            IdIncrement++;
 
-                var newPost = new Post
-                {
-                    PostId = IdIncrement,
-                    AuthorName = authorName, // Replace with the actual authors username from session file / viewbag file
-                    PostTitle = title,
-                    DateTime = DateTime.Now.ToString(),
-                    Content = content,
-                    LikeCount = 0,
-                    DislikeCount = 0,
-                    ViewCount = 0
-                };
+            authorName = UserName;
 
-                // Add the new post to the list
-                posts.Add(newPost);
+            var newPost = new Post_Model
+            {
+                PostId = IdIncrement,
+                Author = authorName,
+                Title = title,
+                Date = DateTime.Now,
+                Content = content,
+                Number_Of_Likes = 0,
+                Number_Of_DisLikes = 0,
+                Number_Of_Visits = 0,
+                Is_Public = true
+            };
 
-                // Redirect to the home page or wherever you want to go after the form submission
-                return RedirectToAction("Index", new { filter = "date" });
+            // Add the new post to the list
+            posts.Add(newPost);
+
+            // Add the new post to the database
+            bool isCreated = await database_Services.Create_Post_Data_By_Model_Async_(newPost);
+            // Redirect to the home page
+            return RedirectToAction("Index", new { filter = "date" });
         }
 
         public IActionResult EditPost(int postId)
@@ -163,40 +242,61 @@ namespace WebProject_Project_VI.Controllers
         }
 
         //  This action is needed to update an existing post after editing. 
-        public IActionResult UpdatePost(int postId, string content)
+        public async Task<IActionResult> UpdatePost(int postId, string content)
         {
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
             var postToUpdate = posts.FirstOrDefault(p => p.PostId == postId);
             if (postToUpdate != null)
             {
                 postToUpdate.Content = content;
-                // Update other fields if necessary
+                bool isUpdated = await database_Services.Update_Property_Data_Post_Data_By_Post_ID_And_Property_Async(postToUpdate.PostId, "Content", postToUpdate.Content, "string");
                 return RedirectToAction("Index");
             }
-            return View("EditPost", new Post { PostId = postId, PostTitle = postToUpdate.PostTitle, Content = content });
+            return View("EditPost", new Post { PostId = postId, PostTitle = postToUpdate.Title, Content = content });
         }
 
-        public IActionResult FetchPost(int postId, string authorName,  string content, string title, int likecount, int dislikecount, int viewcount, string date)
+        public async Task<IActionResult> FetchPost(int postId, string authorName,  string content, string title, int likecount, int dislikecount, int viewcount, string date)
         {
+            if (posts == null)
+            {
+                posts = new List<Post_Model>();
+            }
+            else
+            {
+                posts.Clear();
+                posts = new List<Post_Model>();
+            }
+            string table_name = "post";
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
+            string Username_Authorized = "historyfellow@Post";
+            string Password_Authorized = "HistoryFellow@Password";
+            // Act
+            List<IData>? posts__ = await database_Services.Read_All_Data_By_Table_Name_Async(table_name, Username_Authorized, Password_Authorized);
+            List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post);
 
             // check increment with postID
-            if (IdIncrement <= postId)
+            if (postId <= IdIncrement )
             {
-                IdIncrement = postId;
+                postId = IdIncrement++;
             }
-
-            var newPost = new Post
+            DateTime Condate = DateTime.Parse(date);
+            var newPost = new Post_Model
             {
                 PostId = postId,
-                AuthorName = authorName,
-                PostTitle = title,
-                DateTime = date,
+                Author = authorName,
+                Title = title,
+                Date = Condate,
                 Content = content,
-                LikeCount = likecount,
-                DislikeCount = dislikecount,
-                ViewCount = viewcount
+                Number_Of_Likes = likecount,
+                Number_Of_DisLikes = dislikecount,
+                Number_Of_Visits = viewcount,
+                Is_Public = true
             };
 
             // Add the new post to the list
+            bool isCreated = await database_Services.Create_Post_Data_By_Model_Async_(newPost);
             posts.Add(newPost);
 
             // Redirect to the home page or wherever you want to go after the form submission
@@ -223,40 +323,28 @@ namespace WebProject_Project_VI.Controllers
             return View();
         }
 
-        public IActionResult LoginValidate(string username, string password)
+        public async Task<IActionResult> LoginValidate(string username, string password)
         {
+            WebSecurityServices webSecurityServices = new WebSecurityServices();
+            bool isLoginSuccessful = await webSecurityServices.LoginAsync(username, password);
 
-
-            string User = "liam";
-            string Pass = "bob";
-
-            //check to see if the account is valid 
-            if (username == User)
+            if (isLoginSuccessful)
             {
-                if (password == Pass)
-                {
-                    //save the account name as a viewbag / session file for use else where
-                    UserName = username;
+                // Save the account name for use elsewhere
+                UserName = username;
 
-                    //change AccountSecured to true
-                    AccountSecured = true;
+                // Change AccountSecured to true
+                AccountSecured = true;
 
-                    //Assign the new username to ViewBag
-                    ViewBag.UserName = UserName;
+                // Assign the new username to ViewBag
+                ViewBag.UserName = UserName;
 
-                    // Redirect to the index or wherever you want to go after the form submission
-                    return RedirectToAction("Index", new { filter = "date" });
-                }
-                else   //if not Redirect them to try again
-                {
-                    // Redirect to theLogin or wherever you want to go after login fail
-                    return RedirectToAction("Login");
-                }
+                return RedirectToAction("Index", new { filter = "date" });
             }
-           
-                // Redirect to theLogin or wherever you want to go after login fail
+            else
+            {
                 return RedirectToAction("Login");
-            
+            }
         }
 
         public IActionResult Privacy()
@@ -268,6 +356,27 @@ namespace WebProject_Project_VI.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        internal static readonly char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+
+        public static string GetUniqueKey(int size)
+        {
+            byte[] data = new byte[4 * size];
+            using (var crypto = RandomNumberGenerator.Create())
+            {
+                crypto.GetBytes(data);
+            }
+            StringBuilder result = new StringBuilder(size);
+            for (int i = 0; i < size; i++)
+            {
+                var rnd = BitConverter.ToUInt32(data, i * 4);
+                var idx = rnd % chars.Length;
+
+                result.Append(chars[idx]);
+            }
+
+            return result.ToString();
         }
     }
 }
