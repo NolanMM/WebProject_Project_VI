@@ -3,7 +3,6 @@
 @{
 }
 
-
 <div>
     <h1>Create account!</h1>
 
@@ -14,6 +13,10 @@
             <input type="text" id="authorname" name="authorname" value=""><br>
             <label for="password">Password:</label><br>
             <input type="text" id="password" name="password" value=""><br><br>
+            @if(!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+            <b><p style="color: red;">@ViewBag.ErrorMessage</p></b>
+            }
             <input type="submit" value="Submit">
         </form>
 

@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Security.Cryptography;
 using System.Text;
 using WebProject_Project_VI.Models;
 using WebProject_Project_VI.Services;
-using WebProject_Project_VI.Services.Table_Services;
 
 namespace WebProject_Project_VI.Controllers
 {
@@ -320,32 +318,74 @@ namespace WebProject_Project_VI.Controllers
 
         public IActionResult CreateAccount()
         {
-
+            if (AccountSecured == true)
+            {
+                return RedirectToAction("Index", new { filter = "date" });
+            }
+            else
+            {
+                if (ViewBag.ErrorMessage == null)
+                {
+                    ViewBag.ErrorMessage = string.Empty;
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = ViewBag.ErrorMessage;
+                }
+            }
             return View();
         }
 
-        public IActionResult CreateAccountValidate(string username, string authorname, string password)
+        public async Task<IActionResult> CreateAccountValidate(string username, string authorname, string password)
         {
-
 
             // check to see if the account already exists or if the author name is already taken
 
             // if name not taken send the account info to the database
             // Redirect to the login after account is created
-            return RedirectToAction("Login");
 
+            Database_Services database_Services = new Database_Services();
+            database_Services.Set_Up_Database_Services(_logger, SessionID);
 
+            bool isCreated = await database_Services.Create_Account_Data_By_Passing_Values_Async(username, password, authorname);
+
+            if (isCreated)
+            {
+                AccountSecured = false;
+                ViewBag.ErrorMessage = "Account creation successful! Please login to create/edit post.";
+                if (_logger != null)
+                    _logger.LogInformation("Account creation successful! Please login to create/edit post.");
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                AccountSecured = false;
+                ViewBag.ErrorMessage = "Account creation failed.Your Account already be Created!";
+                if(_logger != null)
+                    _logger.LogInformation("Account creation failed.Duplicated username");
+                return View("CreateAccount");
+            }
             //if name is taken redirect to the create account page so they can try again
             // return RedirectToAction("CreateAccount");
-
-
-
-
         }
 
         public IActionResult Login()
         {
-
+            if(AccountSecured == true)
+            {
+                return RedirectToAction("Index", new { filter = "date" });
+            }
+            else
+            {
+                if (ViewBag.ErrorMessage == null)
+                {
+                    ViewBag.ErrorMessage = string.Empty;
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = ViewBag.ErrorMessage;
+                }
+            }
             return View();
         }
 
@@ -369,7 +409,8 @@ namespace WebProject_Project_VI.Controllers
             }
             else
             {
-                return RedirectToAction("Login");
+                ViewBag.ErrorMessage = "Login failed. Please check your username and password.";
+                return View("Login");
             }
         }
 
