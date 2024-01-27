@@ -225,7 +225,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(16, "SampleTitle", "ContentTestUpdate", "AuthorTestRead", true);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "string");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(title);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(title);
 
@@ -252,7 +252,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(17, "SampleTitleTestAuthor", "ContentTestUpdate", "AuthorTestUpdate", true);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "string");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(title);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(title);
 
@@ -279,7 +279,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(18, "SampleTitleTestTitle", "ContentTestUpdate", "AuthorTestUpdate", true);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "string");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(newValue);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(newValue);
 
@@ -305,7 +305,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(19, "SampleTitle_Int", "ContentTestUpdate", "AuthorTestUpdate", true);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "int");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(title);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(title);
 
@@ -331,7 +331,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(20, "SampleTitle_IntDis", "ContentTestUpdate", "AuthorTestUpdate", true);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "int");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(title);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(title);
 
@@ -357,7 +357,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(21, "SampleTitle_IntVis", "ContentTestUpdate", "AuthorTestUpdate", true);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "int");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(title);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(title);
 
@@ -384,7 +384,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(22, "SampleTitleBoolean", "ContentTestUpdate", "AuthorTestUpdate", false);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "bool");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(title);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(title);
 
@@ -411,7 +411,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(23, "SampleTitleDate", "ContentTestUpdate", "AuthorTestUpdate", false);
 
             // Act
-            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, propertyType.Name);
+            bool result = await post_services.Update_Post_Data_String_By_Title_Async(null, title, propertyUpdated, newValue, "DateTime");
             Post_Model? result_read = await post_services.Read_Post_Data_By_Title_Async(title);
             bool result_delete = await post_services.Delete_Post_By_Title_Async(title);
 

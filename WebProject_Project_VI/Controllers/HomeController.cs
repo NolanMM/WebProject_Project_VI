@@ -39,9 +39,9 @@ namespace WebProject_Project_VI.Controllers
             database_Services.Set_Up_Database_Services(_logger, SessionID);
             string Username_Authorized = "historyfellow@Post";
             string Password_Authorized = "HistoryFellow@Password";
-            // Act
             List<IData>? posts__ = await database_Services.Read_All_Data_By_Table_Name_Async(table_name, Username_Authorized, Password_Authorized);
-            List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post); ;
+            List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post);
+
             if(posts == null)
             {
                 posts = new List<Post_Model>();
@@ -212,7 +212,7 @@ namespace WebProject_Project_VI.Controllers
             var newPost = new Post_Model
             {
                 PostId = IdIncrement,
-                Author = authorName, // Replace with the actual authors username from session file / viewbag file
+                Author = authorName,
                 Title = title,
                 Date = DateTime.Now,
                 Content = content,
@@ -227,7 +227,7 @@ namespace WebProject_Project_VI.Controllers
 
             // Add the new post to the database
             bool isCreated = await database_Services.Create_Post_Data_By_Model_Async_(newPost);
-            // Redirect to the home page or wherever you want to go after the form submission
+            // Redirect to the home page
             return RedirectToAction("Index", new { filter = "date" });
         }
 

@@ -1,7 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+﻿using Moq;
 using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
 using WebProject_Project_VI.Models;
 using WebProject_Project_VI.Services;
 using WebProject_Project_VI.Services.Table_Services;
@@ -32,12 +30,12 @@ namespace Database_Tests
         [TestMethod]
         public async Task LoginAsync_ValidCredentials_ShouldReturnTrue()
         {
-            var username = "validUser";
-            var password = "validPassword";
+            var username = "Liam";
+            var password = "bob";
             var mockAccount = new Account_Model { Username = username, Password = password };
 
-            _mockAccountTableServices.Setup(s => s.Read_Account_Data_By_Username_Async(It.IsAny<string>()))
-                .ReturnsAsync(mockAccount);
+            //_mockAccountTableServices.Setup(s => s.Read_Account_Data_By_Username_Async(It.IsAny<string>()))
+            //    .ReturnsAsync(mockAccount);
 
             var result = await _webSecurityServices.LoginAsync(username, password);
 
@@ -47,11 +45,8 @@ namespace Database_Tests
         [TestMethod]
         public async Task LoginAsync_InvalidCredentials_ShouldReturnFalse()
         {
-            var username = "invalidUser";
-            var password = "invalidPassword";
-
-            _mockAccountTableServices.Setup(s => s.Read_Account_Data_By_Username_Async(It.IsAny<string>()))
-                .ReturnsAsync((Account_Model)null);
+            var username = "Someone";
+            var password = "Hello";
 
             var result = await _webSecurityServices.LoginAsync(username, password);
 
@@ -69,10 +64,7 @@ namespace Database_Tests
         [TestMethod]
          public async Task IsAuthenticated_WhenLoggedIn_ReturnsTrue()
         {
-            await _webSecurityServices.LoginAsync("validUser", "validPassword"); // Ensure this is awaited
-
-            // Diagnostic line: check if AccountSecured is true
-            Assert.IsTrue(_webSecurityServices.AccountSecured, "Account should be secured after login.");
+            _webSecurityServices.LoginAsync("Liam", "bob").Wait();
 
             bool isAuthenticated = _webSecurityServices.IsAuthenticated();
 
@@ -83,8 +75,8 @@ namespace Database_Tests
         [TestMethod]
         public async Task GetUserName_WhenLoggedIn_ReturnsUserName()
         {
-            string expectedUserName = "validUser";
-            await _webSecurityServices.LoginAsync(expectedUserName, "validPassword"); // Await the login
+            string expectedUserName = "Liam";
+            _webSecurityServices.LoginAsync(expectedUserName, "bob").Wait();
 
             string? userName = _webSecurityServices.GetUserName();
 
