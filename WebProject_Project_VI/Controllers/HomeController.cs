@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using WebProject_Project_VI.Models;
 using WebProject_Project_VI.Services;
+using System.Net.Http;
+using WebProject_Project_VI.Services.Table_Services;
 
 namespace WebProject_Project_VI.Controllers
 {
@@ -36,6 +39,7 @@ namespace WebProject_Project_VI.Controllers
 
         private static int IdIncrement;
 
+        [HttpGet, HttpOptions]
         public async Task<IActionResult> Index(string filter)
         {
             string _SessionID = GetUniqueKey(10);
@@ -85,7 +89,7 @@ namespace WebProject_Project_VI.Controllers
             ViewBag.IsLoggedIn = AccountSecured;
             return View(filteredPosts);
         }
-
+        [HttpPatch]
         public async Task<IActionResult> IncrementViews(int postId)
         {
             // Find the post in the list based on the postId
@@ -114,7 +118,7 @@ namespace WebProject_Project_VI.Controllers
                 return Json(new { success = false, error = "Post not found" });
             }
         }
-
+        [HttpPost]
         public async Task<IActionResult> IncrementLikes(int postId)
         {
             // Find the post in the list based on the postId
@@ -143,7 +147,7 @@ namespace WebProject_Project_VI.Controllers
                 return Json(new { success = false, error = "Post not found" });
             }
         }
-
+        [HttpPut]
         public async Task<IActionResult> IncrementDislikes(int postId)
         {
             // Find the post in the list based on the postId
@@ -165,7 +169,7 @@ namespace WebProject_Project_VI.Controllers
                 return Json(new { success = false, error = "Post not found" });
             }
         }
-
+        [HttpDelete]
         public async Task<IActionResult> DeletePost(int postId)
         {
             // Lambda expression to find the post to delete
@@ -190,7 +194,7 @@ namespace WebProject_Project_VI.Controllers
             // Return error if can't delete the post.
             return Json(new { success = false, error = "Error deleting the post" });
         }
-
+        [HttpPost]
         public async Task<IActionResult> CreatePost(string authorName, string title, string content)
         {
             if (posts == null)
@@ -202,16 +206,12 @@ namespace WebProject_Project_VI.Controllers
                 posts.Clear();
                 posts = new List<Post_Model>();
             }
-            string table_name = "post";
             Database_Services database_Services = new Database_Services();
             database_Services.Set_Up_Database_Services(_logger, SessionID);
-            string Username_Authorized = "historyfellow@Post";
-            string Password_Authorized = "HistoryFellow@Password";
-            // Act
-            List<IData>? posts__ = await database_Services.Read_All_Data_By_Table_Name_Async(table_name, Username_Authorized, Password_Authorized);
-            List<Post_Model> filteredPosts = posts__.ConvertAll(post => (Post_Model)post);
+            Post_Table_Services Post_Table_Services = new Post_Table_Services();
+            Post_Table_Services.Set_Up_Post_Table_Services(SessionID,_configuration);
 
-            IdIncrement = filteredPosts.Count();
+            IdIncrement = await Post_Table_Services.Get_Currently_Greatest_Post_ID_In_Post_Table_Async();
             IdIncrement++;
 
             authorName = UserName;
@@ -249,6 +249,7 @@ namespace WebProject_Project_VI.Controllers
         }
 
         //  This action is needed to update an existing post after editing. 
+        [HttpPost]
         public async Task<IActionResult> UpdatePost(int postId, string content)
         {
             Database_Services database_Services = new Database_Services();
