@@ -166,7 +166,7 @@ namespace Database_Tests.Database_Services_Tests.Table_Services_Tests
             Post_Table_Services post_services = new Post_Table_Services();
             post_services.Set_Up_Post_Table_Services(session_id, configuration);
 
-            var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(12, "TitleTestRead", "ContentTestRead", "AuthorTestRead", true);
+            var result_write = await post_services.Create_Post_Data_By_Passing_Values_Async(100, "TitleTestRead", "ContentTestRead", "AuthorTestRead", true);
 
             // Act
             var result = await post_services.Read_Post_Data_By_Title_Async("TitleTestRead") as Post_Model;

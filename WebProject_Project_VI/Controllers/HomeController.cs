@@ -18,6 +18,14 @@ namespace WebProject_Project_VI.Controllers
             _logger.LogInformation("Created HomeController && IConfiguration constructor successfully!");
         }
 
+        public static HomeController Get_Home_Instance
+        {
+            get
+            {
+                return new HomeController(new Logger<HomeController>(new LoggerFactory()), new ConfigurationBuilder().Build());
+            }
+        }
+
         private static Boolean AccountSecured = false;
 
         private static string? UserName = String.Empty;
@@ -436,6 +444,11 @@ namespace WebProject_Project_VI.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public bool GetAccountSecure()
+        {
+            return AccountSecured;
         }
 
         internal static readonly char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
